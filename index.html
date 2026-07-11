@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Our Gallery — Memories</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Yesteryear&family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   MEMORIES — SHARED STYLES
+   ============================================================ */
+:root {
+  --cream: #F7EEE1; --cream-soft: #FBF6EC; --white: #FFFFFF;
+  --ink: #2E1B0F; --brown: #4A2F1C; --brown-deep: #2A1810;
+  --gold: #C79A3D; --gold-soft: #E6C77A; --muted: #8A7563;
+  --border: #E8DCC8; --star: #E3A008;
+  --shadow: 0 6px 20px rgba(42, 24, 16, 0.08);
+  --radius-lg: 18px; --radius-md: 12px; --radius-sm: 8px; --max-w: 480px;
+}
+* { box-sizing: border-box; }
+html, body { margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Poppins',sans-serif; -webkit-font-smoothing:antialiased; }
+body { min-height:100vh; display:flex; justify-content:center; }
+.app { width:100%; max-width:var(--max-w); min-height:100vh; background:var(--cream); position:relative; padding-bottom:84px; }
+a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:pointer; }
+.logo { font-family:'Yesteryear',cursive; font-size:26px; color:var(--ink); display:inline-flex; align-items:center; gap:6px; line-height:1; }
+.logo .heart { color:var(--gold); font-size:15px; transform:translateY(-8px); }
+.topbar { position:sticky; top:0; z-index:20; background:var(--cream); padding:14px 18px 10px; border-bottom:1px solid var(--border); }
+.topbar-row { display:flex; align-items:center; justify-content:space-between; }
+.icon-btn { width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--brown); }
+.topbar-actions { display:flex; align-items:center; gap:16px; }
+.search-bar { margin-top:12px; display:flex; align-items:center; background:var(--white); border:1px solid var(--border); border-radius:999px; padding:10px 8px 10px 18px; gap:8px; }
+.search-bar input { flex:1; border:none; outline:none; background:transparent; font-family:inherit; font-size:14px; color:var(--ink); }
+.search-bar input::placeholder { color:var(--muted); }
+.search-go { width:34px; height:34px; border-radius:50%; background:var(--brown-deep); color:var(--white); border:none; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.quicknav { display:flex; overflow-x:auto; gap:22px; padding:16px 18px 4px; scrollbar-width:none; }
+.quicknav::-webkit-scrollbar { display:none; }
+.quicknav-item { display:flex; flex-direction:column; align-items:center; gap:6px; flex-shrink:0; min-width:56px; background:none; border:none; }
+.quicknav-icon { width:46px; height:46px; border-radius:var(--radius-md); background:var(--white); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; color:var(--brown); }
+.quicknav-icon.active { background:var(--brown-deep); color:var(--white); border-color:var(--brown-deep); }
+.quicknav-label { font-size:10.5px; color:var(--brown); text-align:center; line-height:1.2; }
+.section-title { font-family:'Playfair Display',serif; font-style:italic; font-size:26px; text-align:center; margin:6px 0 2px; color:var(--ink); }
+.section-sub { text-align:center; font-size:12px; color:var(--muted); margin-bottom:14px; }
+.chip-row { display:flex; overflow-x:auto; gap:8px; padding:0 18px 12px; scrollbar-width:none; }
+.chip-row::-webkit-scrollbar { display:none; }
+.chip { flex-shrink:0; padding:9px 16px; border-radius:999px; border:1px solid var(--border); background:var(--white); font-size:12.5px; color:var(--brown); display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.chip.active { background:var(--brown-deep); color:var(--white); border-color:var(--brown-deep); }
+.filter-sort-row { display:flex; justify-content:flex-start; padding:0 18px 14px; gap:8px; }
+.pill-btn { flex:none; display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:6px 12px; border-radius:999px; border:1px solid var(--border); background:var(--white); font-size:11px; color:var(--brown); }
+.pill-btn svg { width:13px; height:13px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; padding:0 18px 20px; }
+.card { position:relative; background:var(--white); border-radius:var(--radius-lg); overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column; }
+.card-media { position:relative; aspect-ratio:1/1; overflow:hidden; cursor:pointer; }
+.card-media img { width:100%; height:100%; object-fit:cover; display:block; }
+.wish-btn { position:absolute; top:8px; right:8px; width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.92); border:none; display:flex; align-items:center; justify-content:center; color:var(--brown); }
+.wish-btn.active { color:#C0392B; }
+.badge-tag { position:absolute; top:8px; left:8px; background:var(--gold-soft); color:var(--brown-deep); font-size:9.5px; font-weight:600; padding:3px 8px; border-radius:999px; letter-spacing:0.3px; }
+.card-body { padding:10px 12px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
+.card-name { font-size:13.5px; font-weight:600; color:var(--ink); line-height:1.25; cursor:pointer; }
+.card-desc { font-size:10.5px; color:var(--muted); line-height:1.3; min-height:26px; }
+.card-price-row { display:flex; align-items:baseline; gap:6px; margin-top:2px; }
+.price { font-size:14.5px; font-weight:700; color:var(--ink); }
+.mrp { font-size:11px; color:var(--muted); text-decoration:line-through; }
+.rating-row { display:flex; align-items:center; gap:4px; font-size:10.5px; color:var(--muted); }
+.stars { color:var(--star); font-size:11px; letter-spacing:1px; }
+.card-actions { display:flex; gap:6px; margin-top:8px; }
+.btn { flex:1; border:none; border-radius:999px; padding:9px 6px; font-size:11px; font-weight:600; text-align:center; display:flex; align-items:center; justify-content:center; gap:5px; }
+.btn-dark { background:var(--brown-deep); color:var(--white); }
+.btn-outline { background:var(--white); color:var(--brown); border:1px solid var(--border); }
+.bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:var(--max-w); background:var(--cream-soft); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 4px 10px; z-index:30; }
+.nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:9.5px; background:none; border:none; }
+.nav-item.active { color:var(--brown-deep); }
+.nav-item svg { width:20px; height:20px; }
+.pd-media { position:relative; aspect-ratio:1/1; overflow:hidden; }
+.pd-media img { width:100%; height:100%; object-fit:cover; display:block; }
+.pd-thumbs { display:flex; gap:8px; padding:10px 18px; overflow-x:auto; }
+.pd-thumb { width:58px; height:58px; border-radius:10px; overflow:hidden; border:2px solid transparent; flex-shrink:0; padding:0; }
+.pd-thumb.active { border-color:var(--brown-deep); }
+.pd-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+.pd-body { padding:4px 18px 0; }
+.pd-name { font-size:20px; font-weight:700; color:var(--ink); margin:6px 0 4px; }
+.pd-shortdesc { font-size:12.5px; color:var(--muted); line-height:1.4; margin-bottom:8px; }
+.pd-rating { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); margin-bottom:10px; }
+.pd-price-row { display:flex; align-items:baseline; gap:10px; margin-bottom:14px; }
+.pd-price { font-size:22px; font-weight:700; color:var(--ink); }
+.pd-mrp { font-size:14px; color:var(--muted); text-decoration:line-through; }
+.pd-features { display:flex; flex-direction:column; gap:9px; margin-bottom:16px; }
+.pd-feature { display:flex; align-items:center; gap:10px; font-size:12.5px; color:var(--brown); }
+.pd-feature svg { flex-shrink:0; color:var(--gold); }
+.pd-label { font-size:12.5px; font-weight:600; color:var(--ink); margin-bottom:8px; }
+.size-row { display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+.size-opt { padding:10px 16px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--white); font-size:12.5px; color:var(--brown); }
+.size-opt.active { background:var(--brown-deep); color:var(--white); border-color:var(--brown-deep); }
+.qty-row { display:flex; align-items:center; gap:16px; margin-bottom:20px; }
+.qty-control { display:flex; align-items:center; border:1px solid var(--border); border-radius:999px; overflow:hidden; }
+.qty-control button { width:36px; height:36px; background:var(--white); border:none; font-size:16px; color:var(--brown); }
+.qty-control span { width:34px; text-align:center; font-size:13px; font-weight:600; }
+.pd-actions { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+.btn-lg { width:100%; padding:15px; border-radius:999px; border:none; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-lg.dark { background:var(--brown-deep); color:var(--white); }
+.btn-lg.outline { background:var(--white); color:var(--brown); border:1px solid var(--brown); }
+.wa-link { text-align:center; font-size:12.5px; color:#25D366; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px; }
+.desc-box { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px; margin:0 18px 20px; }
+.desc-title { font-size:13px; font-weight:700; margin-bottom:8px; color:var(--ink); }
+.desc-text { font-size:12px; color:var(--brown); line-height:1.6; margin-bottom:10px; }
+.desc-list { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px; }
+.desc-list li { font-size:11.5px; color:var(--brown); padding-left:14px; position:relative; }
+.desc-list li::before { content:"•"; color:var(--gold); position:absolute; left:0; }
+.delivery-row { display:flex; gap:10px; margin:0 18px 20px; }
+.delivery-card { flex:1; background:var(--cream-soft); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; text-align:center; }
+.delivery-card svg { color:var(--brown-deep); margin-bottom:4px; }
+.delivery-card .t { font-size:11px; font-weight:600; color:var(--ink); }
+.delivery-card .d { font-size:10px; color:var(--muted); }
+.related-title { padding:0 18px; font-size:15px; font-weight:700; color:var(--ink); margin-bottom:10px; }
+.related-scroll { display:flex; gap:12px; overflow-x:auto; padding:0 18px 22px; scrollbar-width:none; }
+.related-scroll::-webkit-scrollbar { display:none; }
+.related-card { width:140px; flex-shrink:0; }
+.back-row { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; }
+.back-btn { display:flex; align-items:center; gap:6px; color:var(--brown); font-size:13px; font-weight:600; background:none; border:none; }
+.toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--brown-deep); color:var(--white); padding:12px 20px; border-radius:999px; font-size:12.5px; font-weight:600; opacity:0; transition:opacity .25s ease, transform .25s ease; pointer-events:none; z-index:50; white-space:nowrap; }
+.toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+.empty-state { text-align:center; padding:60px 24px; color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <div id="root"></div>
+  <nav class="bottom-nav" id="bottomNav"></nav>
+</div>
+
+<script>
+/* ============================================================
+   DATA — edit shop info & products here
+   ============================================================ */
+const SHOP = {
+  name: "Memories",
+  whatsappNumber: "919999999999" // <-- replace with the real WhatsApp number
+};
+
+const CATEGORIES = [
+  { id: "frames",   name: "Photo Frames",   icon: "frame" },
+  { id: "magnets",  name: "Fridge Magnets", icon: "magnet" },
+  { id: "mugs",     name: "Photo Mugs",     icon: "mug" },
+  { id: "keychains",name: "Keychains",      icon: "key" },
+  { id: "decor",    name: "Wall Decor",     icon: "wall" },
+  { id: "cushions", name: "Photo Cushions", icon: "cushion" }
+];
+
+const PRODUCTS = [
+  { id:"you-me-wooden-frame", name:"You & Me Wooden Frame", category:"frames", price:499, mrp:649, rating:4.5, reviews:128, bestseller:true,
+    images:["https://picsum.photos/seed/frame1a/600/600","https://picsum.photos/seed/frame1b/600/600","https://picsum.photos/seed/frame1c/600/600"],
+    sizes:["8x12 Inch","12x18 Inch"], shortDesc:"Premium quality wooden frame perfect for your loved ones.",
+    description:"Capture your special moments in our premium quality wooden frame. Beautifully crafted to keep your memories alive forever.",
+    features:["Material: Premium Quality Wood","Print: High Resolution","Glass: Crystal Clear","Stand: Tabletop with Wall Hanging"],
+    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
+  { id:"polaroid-fridge-magnet", name:"Polaroid Fridge Magnet", category:"magnets", price:149, mrp:199, rating:4.5, reviews:96, trending:true,
+    images:["https://picsum.photos/seed/magnet1a/600/600","https://picsum.photos/seed/magnet1b/600/600","https://picsum.photos/seed/magnet1c/600/600"],
+    sizes:["Set of 3","Set of 6"], shortDesc:"High quality photo magnets to decorate your fridge.",
+    description:"Turn your favourite pictures into a mini gallery on your fridge. Printed on durable, fade-resistant stock.",
+    features:["Material: Durable Photo Paper + Magnet","Print: High Resolution","Finish: Matte"],
+    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
+  { id:"photo-printed-mug", name:"Photo Printed Mug", category:"mugs", price:299, mrp:349, rating:4.5, reviews:87, bestseller:true,
+    images:["https://picsum.photos/seed/mug1a/600/600","https://picsum.photos/seed/mug1b/600/600"],
+    sizes:["325 ml"], shortDesc:"Premium ceramic mug with your favorite photo.",
+    description:"Start every morning with a memory. Dishwasher and microwave safe, printed with a photo of your choice.",
+    features:["Material: Premium Ceramic","Capacity: 325 ml","Safe For: Dishwasher & Microwave"],
+    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
+  { id:"led-photo-frame", name:"LED Photo Frame", category:"frames", price:799, mrp:999, rating:4.5, reviews:64, trending:true,
+    images:["https://picsum.photos/seed/led1a/600/600","https://picsum.photos/seed/led1b/600/600"],
+    sizes:["6x8 Inch","8x10 Inch"], shortDesc:"Glowing LED frame to light up your special memories.",
+    description:"A warm string of LED lights frames your photo for a soft, glowing display — perfect for a bedside table or gift shelf.",
+    features:["Material: Acrylic + Warm LED Lights","Power: USB / Battery","Print: High Resolution"],
+    delivery:"3 - 4 Days", returns:"7 Days Return Policy" },
+  { id:"custom-photo-keychain", name:"Custom Photo Keychain", category:"keychains", price:199, mrp:249, rating:4.4, reviews:52,
+    images:["https://picsum.photos/seed/key1a/600/600","https://picsum.photos/seed/key1b/600/600"],
+    sizes:["Square","Round","Heart"], shortDesc:"Carry your memories wherever you go.",
+    description:"A pocket-sized keepsake. Your photo, sealed in a sturdy acrylic charm, so a favourite memory is always with you.",
+    features:["Material: Acrylic + Metal Ring","Print: High Resolution","Shapes: Square, Round, Heart"],
+    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
+  { id:"collage-photo-frame", name:"Collage Photo Frame", category:"decor", price:699, mrp:899, rating:4.5, reviews:75, bestseller:true,
+    images:["https://picsum.photos/seed/collage1a/600/600","https://picsum.photos/seed/collage1b/600/600"],
+    sizes:["9 Photos","12 Photos"], shortDesc:"Multiple memories in one beautiful frame.",
+    description:"Fit an entire story on one wall. This collage frame holds several of your favourite photos in a single elegant layout.",
+    features:["Material: Premium Wood","Layout: Grid Collage","Print: High Resolution"],
+    delivery:"3 - 4 Days", returns:"7 Days Return Policy" },
+  { id:"acrylic-photo-frame", name:"Acrylic Photo Frame", category:"frames", price:679, mrp:799, rating:4.6, reviews:58,
+    images:["https://picsum.photos/seed/acrylic1a/600/600","https://picsum.photos/seed/acrylic1b/600/600"],
+    sizes:["6x6 Inch","8x8 Inch"], shortDesc:"A crystal-clear, modern way to display your photo.",
+    description:"Sleek, minimal, modern. This acrylic block frame gives your photo a floating, gallery-quality look on any desk or shelf.",
+    features:["Material: Premium Acrylic","Print: High Resolution UV Print","Finish: Glossy"],
+    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
+  { id:"photo-printed-cushion", name:"Photo Printed Cushion", category:"cushions", price:499, mrp:599, rating:4.5, reviews:69,
+    images:["https://picsum.photos/seed/cushion1a/600/600","https://picsum.photos/seed/cushion1b/600/600"],
+    sizes:["12x12 Inch","16x16 Inch"], shortDesc:"A soft, huggable way to keep memories close.",
+    description:"Your favourite photo, printed on a soft velvet cushion cover — cosy, personal, and a lovely gift for someone you love.",
+    features:["Material: Velvet Cover","Fill: Soft Fibre (included)","Print: High Resolution"],
+    delivery:"3 - 4 Days", returns:"7 Days Return Policy" }
+];
+
+function getProducts(cat) { return (!cat || cat==="all") ? PRODUCTS : PRODUCTS.filter(p=>p.category===cat); }
+function getProduct(id) { return PRODUCTS.find(p=>p.id===id); }
+
+/* ============================================================
+   ICONS
+   ============================================================ */
+const ICONS = {
+  frame: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="4" y="4" width="16" height="16" rx="1.5"/><rect x="7.5" y="7.5" width="9" height="9" rx="0.5"/></svg>`,
+  magnet: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 4v7a6 6 0 0012 0V4"/><path d="M6 4h4M14 4h4M6 7h4M14 7h4"/></svg>`,
+  mug: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5h11v9a4 4 0 01-4 4H9a4 4 0 01-4-4V5z"/><path d="M16 8h2a2.5 2.5 0 010 5h-2"/></svg>`,
+  key: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="15" r="3.5"/><path d="M10.5 12.5L19 4M16 7l2 2M13 10l2 2"/></svg>`,
+  wall: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="7" height="7" rx="1"/><rect x="14" y="4" width="7" height="7" rx="1"/><rect x="3" y="15" width="7" height="5" rx="1"/><rect x="14" y="13" width="7" height="7" rx="1"/></svg>`,
+  cushion: `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8a4 4 0 014-4h8a4 4 0 014 4v8a4 4 0 01-4 4H8a4 4 0 01-4-4V8z"/><path d="M8 8c1 1.5 2 1.5 4 1.5s3-.5 4-1.5M8 16c1-1.5 2-1.5 4-1.5s3 .5 4 1.5"/></svg>`,
+  home: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg>`,
+  grid: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1"/><rect x="13" y="4" width="7" height="7" rx="1"/><rect x="4" y="13" width="7" height="7" rx="1"/><rect x="13" y="13" width="7" height="7" rx="1"/></svg>`,
+  heart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 20s-7-4.4-9.5-8.8C.8 8 2 4.5 5.5 4c2-.3 3.7.8 4.9 2.3 1.2-1.5 2.9-2.6 4.9-2.3C18.8 4.5 20 8 18.5 11.2 15.5 15.6 12 20 12 20z"/></svg>`,
+  heartFilled: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 20s-7-4.4-9.5-8.8C.8 8 2 4.5 5.5 4c2-.3 3.7.8 4.9 2.3 1.2-1.5 2.9-2.6 4.9-2.3C18.8 4.5 20 8 18.5 11.2 15.5 15.6 12 20 12 20z"/></svg>`,
+  cart: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/><path d="M3 4h2l2.2 11.2a2 2 0 002 1.8h7.6a2 2 0 002-1.6L20 8H6"/></svg>`,
+  search: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>`,
+  filter: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h16M7 12h10M10 18h4"/></svg>`,
+  sort: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 4v16M4 7l3-3 3 3M17 20V4M14 17l3 3 3-3"/></svg>`,
+  back: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>`,
+  whatsapp: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 00-8.6 15L2 22l5.1-1.3A10 10 0 1012 2zm5.7 14.2c-.2.7-1.4 1.3-2 1.4-.5.1-1.1.1-1.8-.1-.4-.1-1-.3-1.7-.6-3-1.3-4.9-4.3-5-4.5-.2-.2-1.2-1.6-1.2-3 0-1.4.7-2.1 1-2.4.2-.3.5-.4.7-.4h.5c.2 0 .4 0 .6.4.2.5.7 1.8.8 1.9.1.2.1.3 0 .5-.1.2-.1.3-.3.5l-.4.5c-.1.2-.3.3-.1.6.2.3.8 1.3 1.7 2.1 1.2 1 2.1 1.4 2.5 1.5.3.1.5.1.6-.1.2-.2.7-.8.9-1 .2-.3.4-.2.6-.1l1.7.8c.2.1.4.2.4.4.1.2.1.8-.1 1.5z"/></svg>`,
+  truck: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="6" width="12" height="10"/><path d="M14 10h4l3 3v3h-7z"/><circle cx="7" cy="18" r="1.6"/><circle cx="17.5" cy="18" r="1.6"/></svg>`,
+  refresh: `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 0115-6.7L21 8M3 12a9 9 0 0015 6.7L21 16M3 8v-4M21 16v4"/></svg>`,
+  check: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 6L9 17l-5-5"/></svg>`
+};
+function icon(name) { return ICONS[name] || ""; }
+function starString(r) { const f=Math.floor(r); return "★".repeat(f) + ((r-f>=0.5)?"½":""); }
+function waLink(msg) { return `https://wa.me/${SHOP.whatsappNumber}?text=${encodeURIComponent(msg)}`; }
+function waOrderMsg(p, size, qty) {
+  return `Hi ${SHOP.name}! I'd like to order:\n\n*${p.name}*\nSize: ${size||p.sizes[0]}\nQty: ${qty||1}\nPrice: ₹${p.price}\n\nPlease confirm availability.`;
+}
+function getWishlist() { try { return JSON.parse(sessionStorage.getItem("wishlist")||"[]"); } catch { return []; } }
+function toggleWish(id) {
+  let list = getWishlist();
+  if (list.includes(id)) list = list.filter(x=>x!==id); else list.push(id);
+  sessionStorage.setItem("wishlist", JSON.stringify(list));
+  render();
+}
+function showToast(msg) {
+  let t = document.getElementById("toast");
+  if (!t) { t=document.createElement("div"); t.id="toast"; t.className="toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show");
+  clearTimeout(window._tt); window._tt = setTimeout(()=>t.classList.remove("show"), 1800);
+}
+
+/* ============================================================
+   APP STATE + ROUTER (single file, no page reloads)
+   ============================================================ */
+let state = {
+  view: "list",         // "list" | "detail"
+  category: "all",
+  search: "",
+  sort: "newest",
+  productId: null,
+  activeImage: 0,
+  activeSize: null,
+  qty: 1
+};
+
+function goToList(category) { state = {...state, view:"list", category: category||"all"}; render(); window.scrollTo(0,0); }
+function goToProduct(id) {
+  const p = getProduct(id);
+  state = {...state, view:"detail", productId:id, activeImage:0, activeSize: p ? p.sizes[0] : null, qty:1};
+  render(); window.scrollTo(0,0);
+}
+
+function productCard(p) {
+  const wl = getWishlist();
+  const wished = wl.includes(p.id);
+  const tag = p.bestseller ? "Bestseller" : (p.trending ? "Trending" : "");
+  return `
+  <div class="card">
+    <div class="card-media" onclick="goToProduct('${p.id}')">
+      <img src="${p.images[0]}" alt="${p.name}" loading="lazy">
+      ${tag ? `<span class="badge-tag">${tag}</span>` : ""}
+    </div>
+    <button class="wish-btn ${wished?"active":""}" onclick="toggleWish('${p.id}')">${icon(wished?"heartFilled":"heart")}</button>
+    <div class="card-body">
+      <div class="card-name" onclick="goToProduct('${p.id}')">${p.name}</div>
+      <div class="card-desc">${p.shortDesc}</div>
+      <div class="card-price-row"><span class="price">₹${p.price}</span>${p.mrp?`<span class="mrp">₹${p.mrp}</span>`:""}</div>
+      <div class="rating-row"><span class="stars">${starString(p.rating)}</span> (${p.reviews})</div>
+      <div class="card-actions">
+        <button class="btn btn-dark" onclick="quickOrder('${p.id}')">Customize</button>
+        <button class="btn btn-outline" onclick="goToProduct('${p.id}')">View Details</button>
+      </div>
+    </div>
+  </div>`;
+}
+function quickOrder(id) { const p=getProduct(id); if(p) window.open(waLink(waOrderMsg(p)), "_blank"); }
+
+function renderList() {
+  let list = getProducts(state.category);
+  if (state.search.trim()) {
+    const q = state.search.toLowerCase();
+    list = list.filter(p => p.name.toLowerCase().includes(q) || p.shortDesc.toLowerCase().includes(q));
+  }
+  if (state.sort==="priceLow") list = [...list].sort((a,b)=>a.price-b.price);
+  else if (state.sort==="priceHigh") list = [...list].sort((a,b)=>b.price-a.price);
+  else if (state.sort==="rating") list = [...list].sort((a,b)=>b.rating-a.rating);
+
+  const sortLabel = {newest:"Newest", priceLow:"Price ↑", priceHigh:"Price ↓", rating:"Top Rated"}[state.sort];
+  const allChips = [{id:"all",name:"All Products"}, ...CATEGORIES];
+
+  return `
+    <header class="topbar">
+      <div class="topbar-row">
+        <span class="logo">Memories<span class="heart">♡</span></span>
+        <div class="topbar-actions">
+          <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
+        </div>
+      </div>
+      <div class="search-bar">
+        <input id="searchInput" type="text" placeholder="Search for frames, magnets, gifts..." value="${state.search}">
+        <button class="search-go">${icon("search")}</button>
+      </div>
+    </header>
+
+    <div class="quicknav">
+      ${CATEGORIES.map(c => `
+        <button class="quicknav-item" onclick="goToList('${c.id}')">
+          <div class="quicknav-icon ${state.category===c.id?"active":""}">${icon(c.icon)}</div>
+          <div class="quicknav-label">${c.name}</div>
+        </button>
+      `).join("")}
+    </div>
+
+    <div class="section-title">Our Gallery</div>
+    <p class="section-sub">Beautiful memories, beautifully framed.</p>
+
+    <div class="chip-row">
+      ${allChips.map(c => `<button class="chip ${state.category===c.id?"active":""}" onclick="goToList('${c.id}')">${c.name}</button>`).join("")}
+    </div>
+
+    <div class="filter-sort-row">
+      <button class="pill-btn">${icon("filter")} Filter</button>
+      <button class="pill-btn" id="sortBtn">${icon("sort")} Sort: ${sortLabel}</button>
+    </div>
+
+    ${list.length ? `<div class="grid">${list.map(productCard).join("")}</div>`
+                  : `<div class="empty-state">No products found. Try a different search or category.</div>`}
+  `;
+}
+
+function renderDetail() {
+  const p = getProduct(state.productId);
+  if (!p) return `<div class="back-row"><button class="back-btn" onclick="goToList()">${icon("back")} Back</button></div><div class="empty-state">Product not found.</div>`;
+  const related = PRODUCTS.filter(x => x.category===p.category && x.id!==p.id).slice(0,4);
+  return `
+    <div class="back-row">
+      <button class="back-btn" onclick="goToList('${p.category}')">${icon("back")} Back</button>
+      <span class="logo" style="font-size:18px;">Memories<span class="heart">♡</span></span>
+      <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
+    </div>
+
+    <div class="pd-media"><img src="${p.images[state.activeImage]}" alt="${p.name}"></div>
+    <div class="pd-thumbs">
+      ${p.images.map((img,i) => `<button class="pd-thumb ${i===state.activeImage?"active":""}" onclick="setImage(${i})"><img src="${img}"></button>`).join("")}
+    </div>
+
+    <div class="pd-body">
+      <div class="pd-name">${p.name}</div>
+      <div class="pd-shortdesc">${p.shortDesc}</div>
+      <div class="pd-rating"><span class="stars">${starString(p.rating)}</span> (${p.reviews} reviews)</div>
+      <div class="pd-price-row"><span class="pd-price">₹${p.price}</span>${p.mrp?`<span class="pd-mrp">₹${p.mrp}</span>`:""}</div>
+
+      <div class="pd-features">${p.features.slice(0,4).map(f => `<div class="pd-feature">${icon("check")}<span>${f}</span></div>`).join("")}</div>
+
+      <div class="pd-label">Select Size</div>
+      <div class="size-row">${p.sizes.map(s => `<button class="size-opt ${s===state.activeSize?"active":""}" onclick="setSize('${s}')">${s}</button>`).join("")}</div>
+
+      <div class="pd-label">Quantity</div>
+      <div class="qty-row"><div class="qty-control">
+        <button onclick="setQty(-1)">−</button><span>${state.qty}</span><button onclick="setQty(1)">+</button>
+      </div></div>
+
+      <div class="pd-actions">
+        <button class="btn-lg dark" onclick="showToast('Added to cart')">${icon("cart")} Add to Cart</button>
+        <button class="btn-lg outline" onclick="window.open('${waLink(waOrderMsg(p, state.activeSize, state.qty))}','_blank')">Buy Now</button>
+      </div>
+      <a href="${waLink(waOrderMsg(p, state.activeSize, state.qty))}" target="_blank" class="wa-link">${icon("whatsapp")} Order on WhatsApp</a>
+    </div>
+
+    <div class="desc-box" style="margin-top:22px;">
+      <div class="desc-title">Product Description</div>
+      <div class="desc-text">${p.description}</div>
+      <ul class="desc-list">${p.features.map(f => `<li>${f}</li>`).join("")}</ul>
+    </div>
+
+    <div class="delivery-row">
+      <div class="delivery-card">${icon("truck")}<div class="t">Delivery</div><div class="d">${p.delivery}</div></div>
+      <div class="delivery-card">${icon("refresh")}<div class="t">Easy Returns</div><div class="d">${p.returns}</div></div>
+    </div>
+
+    ${related.length ? `
+    <div class="related-title">You May Also Like</div>
+    <div class="related-scroll">${related.map(x => `<div class="related-card">${productCard(x)}</div>`).join("")}</div>
+    ` : ""}
+  `;
+}
+
+function setImage(i) { state.activeImage = i; render(); }
+function setSize(s) { state.activeSize = s; render(); }
+function setQty(d) { state.qty = Math.max(1, Math.min(20, state.qty + d)); render(); }
+
+function render() {
+  document.getElementById("root").innerHTML = state.view==="detail" ? renderDetail() : renderList();
+  if (state.view === "list") {
+    const input = document.getElementById("searchInput");
+    if (input) {
+      input.addEventListener("input", (e) => { state.search = e.target.value; render(); input.focus(); input.setSelectionRange(input.value.length, input.value.length); });
+    }
+    const sortBtn = document.getElementById("sortBtn");
+    if (sortBtn) {
+      sortBtn.addEventListener("click", () => {
+        const modes = ["newest","priceLow","priceHigh","rating"];
+        state.sort = modes[(modes.indexOf(state.sort)+1) % modes.length];
+        render();
+      });
+    }
+  }
+  renderBottomNav();
+}
+
+function renderBottomNav() {
+  const wl = getWishlist();
+  document.getElementById("bottomNav").innerHTML = `
+    <button class="nav-item ${state.view==="list" && state.category==="all" ? "active":""}" onclick="goToList('all')">${icon("home")}<span>Home</span></button>
+    <button class="nav-item ${state.view==="detail" ? "active":""}" onclick="goToList(state.category)">${icon("grid")}<span>Menu</span></button>
+    <button class="nav-item">${icon(wl.length?"heartFilled":"heart")}<span>Wishlist (${wl.length})</span></button>
+    <a class="nav-item" href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank">${icon("whatsapp")}<span>Order</span></a>
+  `;
+}
+
+render();
+</script>
+</body>
+</html>
