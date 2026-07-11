@@ -64,6 +64,7 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
 .rating-row { display:flex; align-items:center; gap:4px; font-size:10.5px; color:var(--muted); }
 .stars { color:var(--star); font-size:11px; letter-spacing:1px; }
 .card-actions { display:flex; gap:6px; margin-top:8px; }
+.card-actions .btn { height:32px; padding:0 4px; font-size:10.5px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .btn { flex:1; border:none; border-radius:999px; padding:9px 6px; font-size:11px; font-weight:600; text-align:center; display:flex; align-items:center; justify-content:center; gap:5px; }
 .btn-dark { background:var(--brown-deep); color:var(--white); }
 .btn-outline { background:var(--white); color:var(--brown); border:1px solid var(--border); }
@@ -95,8 +96,9 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
 .qty-control { display:flex; align-items:center; border:1px solid var(--border); border-radius:999px; overflow:hidden; }
 .qty-control button { width:36px; height:36px; background:var(--white); border:none; font-size:16px; color:var(--brown); }
 .qty-control span { width:34px; text-align:center; font-size:13px; font-weight:600; }
-.pd-actions { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
-.btn-lg { width:100%; padding:15px; border-radius:999px; border:none; font-size:14px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:8px; }
+.pd-actions { display:flex; justify-content:center; gap:10px; margin-bottom:18px; flex-wrap:wrap; }
+.btn-lg { width:auto; padding:10px 22px; border-radius:999px; border:none; font-size:12.5px; font-weight:500; display:flex; align-items:center; justify-content:center; gap:6px; }
+.btn-lg svg { width:15px; height:15px; }
 .btn-lg.dark { background:var(--brown-deep); color:var(--white); }
 .btn-lg.outline { background:var(--white); color:var(--brown); border:1px solid var(--brown); }
 .wa-link { text-align:center; font-size:12.5px; color:#25D366; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px; }
@@ -120,6 +122,46 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
 .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--brown-deep); color:var(--white); padding:12px 20px; border-radius:999px; font-size:12.5px; font-weight:600; opacity:0; transition:opacity .25s ease, transform .25s ease; pointer-events:none; z-index:50; white-space:nowrap; }
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 .empty-state { text-align:center; padding:60px 24px; color:var(--muted); font-size:13px; }
+
+/* Customize modal */
+.modal-backdrop { position:fixed; inset:0; background:rgba(42,24,16,0.45); z-index:60; }
+.modal-sheet {
+  position:fixed; bottom:0; left:50%; transform:translateX(-50%);
+  width:100%; max-width:var(--max-w); max-height:88vh; overflow-y:auto;
+  background:var(--cream-soft); border-radius:22px 22px 0 0; z-index:61;
+  padding:18px 20px 26px; box-shadow:0 -8px 30px rgba(0,0,0,0.18);
+}
+.modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.modal-title { font-size:15.5px; font-weight:700; color:var(--ink); }
+.modal-close { width:30px; height:30px; border-radius:50%; background:var(--white); border:1px solid var(--border); font-size:16px; color:var(--brown); display:flex; align-items:center; justify-content:center; }
+.modal-product { font-size:12.5px; color:var(--muted); margin-bottom:14px; }
+.modal-product b { color:var(--ink); }
+.modal-label { font-size:12px; font-weight:600; color:var(--ink); margin-bottom:6px; }
+.modal-textarea {
+  width:100%; min-height:80px; border-radius:var(--radius-md); border:1px solid var(--border);
+  background:var(--white); padding:12px; font-family:inherit; font-size:12.5px; color:var(--ink);
+  resize:vertical; margin-bottom:16px;
+}
+.modal-textarea::placeholder { color:var(--muted); }
+.upload-box {
+  border:1.5px dashed var(--border); border-radius:var(--radius-md); background:var(--white);
+  padding:18px; text-align:center; margin-bottom:18px; cursor:pointer; position:relative; overflow:hidden;
+}
+.upload-box .placeholder { font-size:12px; color:var(--muted); }
+.upload-box .placeholder svg { display:block; margin:0 auto 8px; color:var(--brown); }
+.upload-preview { width:100%; max-height:160px; object-fit:cover; border-radius:var(--radius-sm); display:block; }
+.upload-remove {
+  position:absolute; top:8px; right:8px; width:26px; height:26px; border-radius:50%;
+  background:rgba(255,255,255,0.9); border:none; color:var(--brown); font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+}
+.modal-note { font-size:10.5px; color:var(--muted); text-align:center; margin-bottom:14px; line-height:1.5; }
+.modal-input {
+  width:100%; border-radius:var(--radius-md); border:1px solid var(--border);
+  background:var(--white); padding:12px; font-family:inherit; font-size:12.5px; color:var(--ink);
+  margin-bottom:10px;
+}
+.modal-input::placeholder { color:var(--muted); }
 </style>
 </head>
 <body>
@@ -127,6 +169,7 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
   <div id="root"></div>
   <nav class="bottom-nav" id="bottomNav"></nav>
 </div>
+<div id="modalRoot"></div>
 
 <script>
 /* ============================================================
@@ -134,7 +177,7 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
    ============================================================ */
 const SHOP = {
   name: "Memories",
-  whatsappNumber: "919999999999" // <-- replace with the real WhatsApp number
+  whatsappNumber: "919763622170" // <-- replace with the real WhatsApp number
 };
 
 const CATEGORIES = [
@@ -248,17 +291,22 @@ function showToast(msg) {
    APP STATE + ROUTER (single file, no page reloads)
    ============================================================ */
 let state = {
-  view: "list",         // "list" | "detail"
+  view: "list",         // "list" | "detail" | "wishlist"
   category: "all",
   search: "",
   sort: "newest",
   productId: null,
   activeImage: 0,
   activeSize: null,
-  qty: 1
+  qty: 1,
+  customizeOpen: false,
+  customizeProductId: null,
+  customizeImageData: null, // data URL for preview only
+  customizeSize: null
 };
 
 function goToList(category) { state = {...state, view:"list", category: category||"all"}; render(); window.scrollTo(0,0); }
+function goToWishlist() { state = {...state, view:"wishlist"}; render(); window.scrollTo(0,0); }
 function goToProduct(id) {
   const p = getProduct(id);
   state = {...state, view:"detail", productId:id, activeImage:0, activeSize: p ? p.sizes[0] : null, qty:1};
@@ -282,7 +330,7 @@ function productCard(p) {
       <div class="card-price-row"><span class="price">₹${p.price}</span>${p.mrp?`<span class="mrp">₹${p.mrp}</span>`:""}</div>
       <div class="rating-row"><span class="stars">${starString(p.rating)}</span> (${p.reviews})</div>
       <div class="card-actions">
-        <button class="btn btn-dark" onclick="quickOrder('${p.id}')">Customize</button>
+        <button class="btn btn-dark" onclick="openCustomize('${p.id}')">Customize</button>
         <button class="btn btn-outline" onclick="goToProduct('${p.id}')">View Details</button>
       </div>
     </div>
@@ -376,10 +424,9 @@ function renderDetail() {
       </div></div>
 
       <div class="pd-actions">
-        <button class="btn-lg dark" onclick="showToast('Added to cart')">${icon("cart")} Add to Cart</button>
-        <button class="btn-lg outline" onclick="window.open('${waLink(waOrderMsg(p, state.activeSize, state.qty))}','_blank')">Buy Now</button>
+        <button class="btn-lg outline" onclick="openCustomize('${p.id}')">Customize</button>
+        <button class="btn-lg dark" onclick="window.open('${waLink(waOrderMsg(p, state.activeSize, state.qty))}','_blank')">${icon("whatsapp")} Order on WhatsApp</button>
       </div>
-      <a href="${waLink(waOrderMsg(p, state.activeSize, state.qty))}" target="_blank" class="wa-link">${icon("whatsapp")} Order on WhatsApp</a>
     </div>
 
     <div class="desc-box" style="margin-top:22px;">
@@ -388,11 +435,7 @@ function renderDetail() {
       <ul class="desc-list">${p.features.map(f => `<li>${f}</li>`).join("")}</ul>
     </div>
 
-    <div class="delivery-row">
-      <div class="delivery-card">${icon("truck")}<div class="t">Delivery</div><div class="d">${p.delivery}</div></div>
-      <div class="delivery-card">${icon("refresh")}<div class="t">Easy Returns</div><div class="d">${p.returns}</div></div>
-    </div>
-
+    
     ${related.length ? `
     <div class="related-title">You May Also Like</div>
     <div class="related-scroll">${related.map(x => `<div class="related-card">${productCard(x)}</div>`).join("")}</div>
@@ -404,8 +447,29 @@ function setImage(i) { state.activeImage = i; render(); }
 function setSize(s) { state.activeSize = s; render(); }
 function setQty(d) { state.qty = Math.max(1, Math.min(20, state.qty + d)); render(); }
 
+function renderWishlist() {
+  const wl = getWishlist();
+  const products = PRODUCTS.filter(p => wl.includes(p.id));
+  return `
+    <div class="back-row">
+      <button class="back-btn" onclick="goToList('all')">${icon("back")} Back</button>
+      <span class="logo" style="font-size:18px;">Memories<span class="heart">♡</span></span>
+      <span style="width:36px;"></span>
+    </div>
+    <div class="section-title">My Wishlist</div>
+    <p class="section-sub">${products.length ? `${products.length} item${products.length>1?"s":""} saved` : "Nothing saved yet"}</p>
+    ${products.length
+      ? `<div class="grid">${products.map(productCard).join("")}</div>`
+      : `<div class="empty-state">Tap the heart icon on any product to save it here.</div>`}
+  `;
+}
+
 function render() {
-  document.getElementById("root").innerHTML = state.view==="detail" ? renderDetail() : renderList();
+  const root = document.getElementById("root");
+  if (state.view === "detail") root.innerHTML = renderDetail();
+  else if (state.view === "wishlist") root.innerHTML = renderWishlist();
+  else root.innerHTML = renderList();
+
   if (state.view === "list") {
     const input = document.getElementById("searchInput");
     if (input) {
@@ -421,6 +485,7 @@ function render() {
     }
   }
   renderBottomNav();
+  renderCustomizeModal();
 }
 
 function renderBottomNav() {
@@ -428,8 +493,153 @@ function renderBottomNav() {
   document.getElementById("bottomNav").innerHTML = `
     <button class="nav-item ${state.view==="list" && state.category==="all" ? "active":""}" onclick="goToList('all')">${icon("home")}<span>Home</span></button>
     <button class="nav-item ${state.view==="detail" ? "active":""}" onclick="goToList(state.category)">${icon("grid")}<span>Menu</span></button>
-    <button class="nav-item">${icon(wl.length?"heartFilled":"heart")}<span>Wishlist (${wl.length})</span></button>
+    <button class="nav-item ${state.view==="wishlist" ? "active":""}" onclick="goToWishlist()">${icon(wl.length?"heartFilled":"heart")}<span>Wishlist (${wl.length})</span></button>
     <a class="nav-item" href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank">${icon("whatsapp")}<span>Order</span></a>
+  `;
+}
+
+/* ---------- Customize form modal ---------- */
+function openCustomize(id) {
+  const p = getProduct(id);
+  state.customizeOpen = true;
+  state.customizeProductId = id;
+  state.customizeImageData = null;
+  state.customizeSize = (p && p.sizes && p.sizes.length) ? p.sizes[0] : null;
+  render();
+}
+function closeCustomize() {
+  state.customizeOpen = false;
+  render();
+}
+function selectCustomizeSize(s, btnEl) {
+  state.customizeSize = s;
+  const row = btnEl.parentElement;
+  row.querySelectorAll(".size-opt").forEach(b => b.classList.remove("active"));
+  btnEl.classList.add("active");
+}
+function handleCustomizeImage(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    state.customizeImageData = e.target.result;
+    updateCustomizeImageBox();
+  };
+  reader.readAsDataURL(file);
+}
+function removeCustomizeImage(event) {
+  event.stopPropagation();
+  state.customizeImageData = null;
+  const fileInput = document.getElementById("customizeFileInput");
+  if (fileInput) fileInput.value = "";
+  updateCustomizeImageBox();
+}
+function updateCustomizeImageBox() {
+  const box = document.getElementById("uploadBoxInner");
+  if (!box) return;
+  box.innerHTML = state.customizeImageData
+    ? `<img class="upload-preview" src="${state.customizeImageData}" alt="Reference preview">
+       <button class="upload-remove" onclick="removeCustomizeImage(event)">×</button>`
+    : `<div class="placeholder">${icon("frame")}<div>Tap to upload the photo you want used</div></div>`;
+}
+function dataURLtoFile(dataUrl, filename) {
+  const parts = dataUrl.split(",");
+  const mimeMatch = parts[0].match(/:(.*?);/);
+  const mime = mimeMatch ? mimeMatch[1] : "image/jpeg";
+  const bstr = atob(parts[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+  while (n--) u8arr[n] = bstr.charCodeAt(n);
+  return new File([u8arr], filename, { type: mime });
+}
+
+async function submitCustomize() {
+  const p = getProduct(state.customizeProductId);
+  if (!p) return;
+  const name = (document.getElementById("customizeName")?.value || "").trim();
+  const phone = (document.getElementById("customizePhone")?.value || "").trim();
+  const details = (document.getElementById("customizeText")?.value || "").trim();
+
+  if (!name) {
+    document.getElementById("customizeName").focus();
+    showToast("Please enter your name");
+    return;
+  }
+
+  let message = `Hi ${SHOP.name}! I'd like to customize:\n\n*${p.name}*\nPrice: ₹${p.price}\n`;
+  if (state.customizeSize) message += `Size: ${state.customizeSize}\n`;
+  message += `\nCustomization details:\n${details || "-"}\n`;
+  message += `\nMy details:\nName: ${name}\nPhone: ${phone || "-"}\n`;
+
+  // If a reference photo was uploaded, try to share it directly (this can
+  // actually attach the image when the person picks WhatsApp from their
+  // phone's native share sheet). Falls back to a text-only WhatsApp link
+  // on browsers/desktops that don't support sharing files.
+  if (state.customizeImageData) {
+    try {
+      const file = dataURLtoFile(state.customizeImageData, "reference-photo.jpg");
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          text: message,
+          title: `${SHOP.name} — Customize Order`
+        });
+        closeCustomize();
+        return;
+      }
+    } catch (err) {
+      // Share was cancelled or unsupported — fall through to WhatsApp link below.
+    }
+    message += `\n(Reference photo: sharing directly wasn't supported on this device — I'll send the photo in this chat right after this message)`;
+  }
+
+  window.open(waLink(message), "_blank");
+  closeCustomize();
+}
+
+function renderCustomizeModal() {
+  const modalRoot = document.getElementById("modalRoot");
+  if (!state.customizeOpen) { modalRoot.innerHTML = ""; return; }
+  const p = getProduct(state.customizeProductId);
+  if (!p) { modalRoot.innerHTML = ""; return; }
+  const hasSizes = p.sizes && p.sizes.length > 0;
+  modalRoot.innerHTML = `
+    <div class="modal-backdrop" onclick="closeCustomize()"></div>
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <span class="modal-title">Customize Your Order</span>
+        <button class="modal-close" onclick="closeCustomize()">×</button>
+      </div>
+      <div class="modal-product">For: <b>${p.name}</b> · ₹${p.price}</div>
+
+      ${hasSizes ? `
+      <div class="modal-label">Select Size</div>
+      <div class="size-row">
+        ${p.sizes.map(s => `<button class="size-opt ${s===state.customizeSize?"active":""}" onclick="selectCustomizeSize('${s}', this)">${s}</button>`).join("")}
+      </div>
+      ` : ""}
+
+      <div class="modal-label">Customization Details</div>
+      <textarea id="customizeText" class="modal-textarea" placeholder="e.g. Names to engrave, text, colors, occasion..."></textarea>
+
+      <div class="modal-label">Reference Image (optional)</div>
+      <div class="upload-box" onclick="document.getElementById('customizeFileInput').click()">
+        <input type="file" id="customizeFileInput" accept="image/*" style="display:none" onchange="handleCustomizeImage(event)">
+        <div id="uploadBoxInner">
+          ${state.customizeImageData
+            ? `<img class="upload-preview" src="${state.customizeImageData}" alt="Reference preview">
+               <button class="upload-remove" onclick="removeCustomizeImage(event)">×</button>`
+            : `<div class="placeholder">${icon("frame")}<div>Tap to upload the photo you want used</div></div>`}
+        </div>
+      </div>
+      <div class="modal-note">WhatsApp doesn't let a website attach photos automatically — after you tap send, just share this photo in the chat that opens.</div>
+
+      <div class="modal-label">Your Details</div>
+      <input type="text" id="customizeName" class="modal-input" placeholder="Your name">
+      <input type="tel" id="customizePhone" class="modal-input" placeholder="Phone number (optional)">
+
+      <button class="btn-lg dark" style="width:100%; margin-top:6px;" onclick="submitCustomize()">${icon("whatsapp")} Send Details via WhatsApp</button>
+    </div>
   `;
 }
 
