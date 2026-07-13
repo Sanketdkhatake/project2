@@ -3,7 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <title>Our Gallery — Memories</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F7EEE1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Memories">
+<meta name="format-detection" content="telephone=no">
+<meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Yesteryear&family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
@@ -17,15 +24,63 @@
   --border: #E8DCC8; --star: #E3A008;
   --shadow: 0 6px 20px rgba(42, 24, 16, 0.08);
   --radius-lg: 18px; --radius-md: 12px; --radius-sm: 8px; --max-w: 480px;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-l: env(safe-area-inset-left, 0px);
+  --safe-r: env(safe-area-inset-right, 0px);
 }
-* { box-sizing: border-box; }
-html, body { margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Poppins',sans-serif; -webkit-font-smoothing:antialiased; }
-body { min-height:100vh; display:flex; justify-content:center; }
-.app { width:100%; max-width:var(--max-w); min-height:100vh; background:var(--cream); position:relative; padding-bottom:84px; }
-a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:pointer; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { height:-webkit-fill-available; }
+html, body { margin:0; padding:0; background:var(--cream); color:var(--ink); font-family:'Poppins',sans-serif; -webkit-font-smoothing:antialiased; overscroll-behavior-y:none; }
+body {
+  min-height:100vh; min-height:100dvh; height:100%;
+  display:flex; justify-content:center;
+  background: var(--cream);
+}
+/* Desktop / tablet: present the app as a centered phone-style card so the
+   experience still reads as a mobile menu even on a Windows browser window */
+@media (min-width: 720px) {
+  body {
+    background: linear-gradient(160deg, #EFE2CB 0%, #F7EEE1 55%, #EAD9BC 100%);
+    align-items:flex-start;
+    padding: 36px 16px;
+  }
+}
+.app {
+  width:100%; max-width:var(--max-w); min-height:100vh; min-height:100dvh;
+  background:var(--cream); position:relative; padding-bottom:calc(84px + var(--safe-b));
+  padding-left:var(--safe-l); padding-right:var(--safe-r);
+}
+@media (min-width: 720px) {
+  .app {
+    min-height:auto;
+    border-radius:28px;
+    box-shadow:0 30px 70px rgba(42,24,16,0.22), 0 0 0 10px rgba(255,255,255,0.5);
+    overflow:hidden;
+    max-height:calc(100vh - 72px);
+    overflow-y:auto;
+    scrollbar-width:thin;
+  }
+  .bottom-nav { border-radius:0 0 28px 28px; }
+}
+a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:pointer; touch-action:manipulation; }
+/* Give every interactive control a visible, quick press response for touch */
+button, .card-media, .chip, .quicknav-item, .nav-item, .pill-btn, .size-opt, .pd-thumb {
+  transition: transform .12s ease, opacity .12s ease, background-color .12s ease;
+}
+button:active, .card-media:active, .chip:active, .quicknav-item:active, .nav-item:active,
+.pill-btn:active, .size-opt:active, .pd-thumb:active, .wish-btn:active {
+  transform: scale(0.94); opacity:0.85;
+}
+.card-media:active img { transform: scale(1.03); }
+/* Minimum comfortable touch target size on touch devices */
+@media (pointer: coarse) {
+  .icon-btn, .wish-btn, .modal-close, .qty-control button { min-width:40px; min-height:40px; }
+  .search-bar input, .modal-input, .modal-textarea { font-size:16px; }
+}
 .logo { font-family:'Yesteryear',cursive; font-size:26px; color:var(--ink); display:inline-flex; align-items:center; gap:6px; line-height:1; }
 .logo .heart { color:var(--gold); font-size:15px; transform:translateY(-8px); }
-.topbar { position:sticky; top:0; z-index:20; background:var(--cream); padding:14px 18px 10px; border-bottom:1px solid var(--border); }
+.topbar { position:sticky; top:0; z-index:20; background:var(--cream); padding:calc(14px + var(--safe-t)) 18px 10px; border-bottom:1px solid var(--border); }
 .topbar-row { display:flex; align-items:center; justify-content:space-between; }
 .icon-btn { width:36px; height:36px; display:flex; align-items:center; justify-content:center; color:var(--brown); }
 .topbar-actions { display:flex; align-items:center; gap:16px; }
@@ -68,12 +123,28 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
 .btn { flex:1; border:none; border-radius:999px; padding:9px 6px; font-size:11px; font-weight:600; text-align:center; display:flex; align-items:center; justify-content:center; gap:5px; }
 .btn-dark { background:var(--brown-deep); color:var(--white); }
 .btn-outline { background:var(--white); color:var(--brown); border:1px solid var(--border); }
-.bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:var(--max-w); background:var(--cream-soft); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 4px 10px; z-index:30; }
+.bottom-nav { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:var(--max-w); background:var(--cream-soft); border-top:1px solid var(--border); display:flex; justify-content:space-around; padding:8px 4px calc(10px + var(--safe-b)); z-index:30; padding-left:calc(4px + var(--safe-l)); padding-right:calc(4px + var(--safe-r)); }
+@media (min-width:720px) { .bottom-nav { position:sticky; left:auto; transform:none; } }
+@media (min-width: 900px) {
+  :root { --max-w: 720px; }
+  .grid { grid-template-columns:repeat(3, 1fr); }
+  .related-card { width:160px; }
+}
+@media (min-width: 1180px) {
+  :root { --max-w: 940px; }
+  .grid { grid-template-columns:repeat(4, 1fr); }
+}
 .nav-item { display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--muted); font-size:9.5px; background:none; border:none; }
 .nav-item.active { color:var(--brown-deep); }
 .nav-item svg { width:20px; height:20px; }
-.pd-media { position:relative; aspect-ratio:1/1; overflow:hidden; }
+.pd-media { position:relative; aspect-ratio:1/1; overflow:hidden; touch-action:pan-y; }
 .pd-media img { width:100%; height:100%; object-fit:cover; display:block; }
+@media (min-width: 720px) {
+  .pd-wrap { display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start; padding:0 18px; }
+  .pd-wrap .pd-media { border-radius:var(--radius-lg); max-height:520px; }
+  .pd-wrap .pd-body { padding:4px 0 0; }
+  .pd-wrap .pd-thumbs { padding:10px 0; }
+}
 .pd-thumbs { display:flex; gap:8px; padding:10px 18px; overflow-x:auto; }
 .pd-thumb { width:58px; height:58px; border-radius:10px; overflow:hidden; border:2px solid transparent; flex-shrink:0; padding:0; }
 .pd-thumb.active { border-color:var(--brown-deep); }
@@ -123,13 +194,44 @@ a { text-decoration:none; color:inherit; } button { font-family:inherit; cursor:
 .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 .empty-state { text-align:center; padding:60px 24px; color:var(--muted); font-size:13px; }
 
+/* Swipe-gallery dots */
+.pd-dots { position:absolute; bottom:10px; left:0; right:0; display:flex; justify-content:center; gap:5px; pointer-events:none; }
+.pd-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.6); transition:all .2s ease; }
+.pd-dot.active { background:var(--white); width:16px; border-radius:4px; }
+
+/* Image skeleton shimmer while loading */
+img { background-color:var(--border); }
+img[data-loaded="0"] { animation: shimmer 1.2s ease-in-out infinite; }
+@keyframes shimmer { 0%,100% { opacity:0.55; } 50% { opacity:0.9; } }
+
+/* Offline banner */
+.offline-banner {
+  position:fixed; top:0; left:50%; transform:translateX(-50%) translateY(-100%);
+  width:100%; max-width:var(--max-w); background:#5C3A1E; color:var(--white);
+  font-size:11.5px; font-weight:600; text-align:center; padding:calc(8px + var(--safe-t)) 12px 8px;
+  z-index:80; transition:transform .3s ease;
+}
+.offline-banner.show { transform:translateX(-50%) translateY(0); }
+@media (min-width:720px) { .offline-banner { position:absolute; } }
+
+/* Scroll-to-top FAB */
+.scroll-top-fab {
+  position:fixed; bottom:calc(78px + var(--safe-b)); right:calc(16px + var(--safe-r));
+  width:42px; height:42px; border-radius:50%; background:var(--brown-deep); color:var(--white);
+  border:none; display:flex; align-items:center; justify-content:center; box-shadow:var(--shadow);
+  z-index:25; opacity:0; pointer-events:none; transform:translateY(8px) scale(0.9);
+  transition:all .2s ease;
+}
+.scroll-top-fab.show { opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }
+@media (min-width:720px) { .scroll-top-fab { position:absolute; } }
+
 /* Customize modal */
 .modal-backdrop { position:fixed; inset:0; background:rgba(42,24,16,0.45); z-index:60; }
 .modal-sheet {
   position:fixed; bottom:0; left:50%; transform:translateX(-50%);
   width:100%; max-width:var(--max-w); max-height:88vh; overflow-y:auto;
   background:var(--cream-soft); border-radius:22px 22px 0 0; z-index:61;
-  padding:18px 20px 26px; box-shadow:0 -8px 30px rgba(0,0,0,0.18);
+  padding:18px 20px calc(26px + var(--safe-b)); box-shadow:0 -8px 30px rgba(0,0,0,0.18);
 }
 .modal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .modal-title { font-size:15.5px; font-weight:700; color:var(--ink); }
@@ -275,6 +377,7 @@ function waOrderMsg(p, size, qty) {
 }
 function getWishlist() { try { return JSON.parse(sessionStorage.getItem("wishlist")||"[]"); } catch { return []; } }
 function toggleWish(id) {
+  vibrate(15);
   let list = getWishlist();
   if (list.includes(id)) list = list.filter(x=>x!==id); else list.push(id);
   sessionStorage.setItem("wishlist", JSON.stringify(list));
@@ -305,12 +408,35 @@ let state = {
   customizeSize: null
 };
 
-function goToList(category) { state = {...state, view:"list", category: category||"all"}; render(); window.scrollTo(0,0); }
-function goToWishlist() { state = {...state, view:"wishlist"}; render(); window.scrollTo(0,0); }
+function vibrate(ms) { try { if (navigator.vibrate) navigator.vibrate(ms||10); } catch(e) {} }
+
+// Push a history entry for every in-app navigation so the phone's hardware
+// back button (Android) / browser back gesture steps back through the app
+// instead of immediately closing the tab.
+function pushHistory(label) {
+  try { history.pushState({ appNav:true, ts:Date.now(), label }, "", ""); } catch(e) {}
+}
+window.addEventListener("popstate", (e) => {
+  if (state.customizeOpen) { state.customizeOpen = false; render(); return; }
+  if (state.view === "detail" || state.view === "wishlist") {
+    state.view = "list";
+    render(); window.scrollTo(0,0);
+  }
+});
+
+function goToList(category) { vibrate(); pushHistory("list"); state = {...state, view:"list", category: category||"all"}; render(); scrollAppTop(); }
+function goToWishlist() { vibrate(); pushHistory("wishlist"); state = {...state, view:"wishlist"}; render(); scrollAppTop(); }
 function goToProduct(id) {
+  vibrate();
+  pushHistory("detail:"+id);
   const p = getProduct(id);
   state = {...state, view:"detail", productId:id, activeImage:0, activeSize: p ? p.sizes[0] : null, qty:1};
-  render(); window.scrollTo(0,0);
+  render(); scrollAppTop();
+}
+function scrollAppTop() {
+  const scroller = document.querySelector(".app");
+  if (scroller && getComputedStyle(scroller).overflowY === "auto") scroller.scrollTo(0,0);
+  window.scrollTo(0,0);
 }
 
 function productCard(p) {
@@ -402,9 +528,14 @@ function renderDetail() {
       <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
     </div>
 
-    <div class="pd-media"><img src="${p.images[state.activeImage]}" alt="${p.name}"></div>
+    <div class="pd-wrap">
+    <div>
+    <div class="pd-media" id="pdMedia"><img src="${p.images[state.activeImage]}" alt="${p.name}">
+      ${p.images.length>1 ? `<div class="pd-dots">${p.images.map((_,i)=>`<span class="pd-dot ${i===state.activeImage?"active":""}"></span>`).join("")}</div>` : ""}
+    </div>
     <div class="pd-thumbs">
       ${p.images.map((img,i) => `<button class="pd-thumb ${i===state.activeImage?"active":""}" onclick="setImage(${i})"><img src="${img}"></button>`).join("")}
+    </div>
     </div>
 
     <div class="pd-body">
@@ -428,6 +559,7 @@ function renderDetail() {
         <button class="btn-lg dark" onclick="window.open('${waLink(waOrderMsg(p, state.activeSize, state.qty))}','_blank')">${icon("whatsapp")} Order on WhatsApp</button>
       </div>
     </div>
+    </div>
 
     <div class="desc-box" style="margin-top:22px;">
       <div class="desc-title">Product Description</div>
@@ -445,7 +577,7 @@ function renderDetail() {
 
 function setImage(i) { state.activeImage = i; render(); }
 function setSize(s) { state.activeSize = s; render(); }
-function setQty(d) { state.qty = Math.max(1, Math.min(20, state.qty + d)); render(); }
+function setQty(d) { vibrate(8); state.qty = Math.max(1, Math.min(20, state.qty + d)); render(); }
 
 function renderWishlist() {
   const wl = getWishlist();
@@ -484,8 +616,98 @@ function render() {
       });
     }
   }
+  if (state.view === "detail") setupGallerySwipe();
+  setupImageLoadState();
   renderBottomNav();
   renderCustomizeModal();
+}
+
+// Mark each image with a data-loaded flag so the CSS skeleton shimmer shows
+// until the real photo has actually painted (nicer on slow mobile data).
+function setupImageLoadState() {
+  document.querySelectorAll('img:not([data-loaded])').forEach(img => {
+    img.setAttribute("data-loaded", img.complete ? "1" : "0");
+    if (!img.complete) {
+      img.addEventListener("load", () => img.setAttribute("data-loaded","1"), { once:true });
+      img.addEventListener("error", () => img.setAttribute("data-loaded","1"), { once:true });
+    }
+  });
+}
+
+// Swipe left/right on the product gallery image to move between photos —
+// the natural gesture on a phone instead of only tapping tiny thumbnails.
+function setupGallerySwipe() {
+  const media = document.getElementById("pdMedia");
+  if (!media) return;
+  let startX = 0, startY = 0, tracking = false;
+  media.addEventListener("touchstart", (e) => {
+    const t = e.touches[0]; startX = t.clientX; startY = t.clientY; tracking = true;
+  }, { passive:true });
+  media.addEventListener("touchend", (e) => {
+    if (!tracking) return; tracking = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - startX, dy = t.clientY - startY;
+    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+      const p = getProduct(state.productId);
+      if (!p) return;
+      const n = p.images.length;
+      let next = state.activeImage + (dx < 0 ? 1 : -1);
+      next = (next + n) % n;
+      setImage(next);
+    }
+  }, { passive:true });
+}
+
+/* ---------- Offline detection banner ---------- */
+function ensureOfflineBanner() {
+  let b = document.getElementById("offlineBanner");
+  if (!b) {
+    b = document.createElement("div");
+    b.id = "offlineBanner";
+    b.className = "offline-banner";
+    b.textContent = "You're offline — some content may not load";
+    (document.querySelector(".app") || document.body).appendChild(b);
+  }
+  return b;
+}
+function updateOfflineBanner() {
+  const b = ensureOfflineBanner();
+  b.classList.toggle("show", !navigator.onLine);
+}
+window.addEventListener("online", updateOfflineBanner);
+window.addEventListener("offline", updateOfflineBanner);
+
+/* ---------- Scroll-to-top FAB ---------- */
+function ensureScrollTopFab() {
+  let f = document.getElementById("scrollTopFab");
+  if (!f) {
+    f = document.createElement("button");
+    f.id = "scrollTopFab";
+    f.className = "scroll-top-fab";
+    f.setAttribute("aria-label", "Scroll to top");
+    f.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>`;
+    f.addEventListener("click", () => { vibrate(); scrollAppTop(); });
+    (document.querySelector(".app") || document.body).appendChild(f);
+  }
+  return f;
+}
+function handleScrollForFab() {
+  const fab = ensureScrollTopFab();
+  const y = (document.querySelector(".app") && getComputedStyle(document.querySelector(".app")).overflowY === "auto")
+    ? document.querySelector(".app").scrollTop
+    : window.scrollY;
+  fab.classList.toggle("show", y > 600);
+}
+window.addEventListener("scroll", handleScrollForFab, { passive:true });
+function initGlobalListeners() {
+  const appEl = document.querySelector(".app");
+  if (appEl) appEl.addEventListener("scroll", handleScrollForFab, { passive:true });
+  updateOfflineBanner();
+}
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initGlobalListeners);
+} else {
+  initGlobalListeners();
 }
 
 function renderBottomNav() {
@@ -500,6 +722,8 @@ function renderBottomNav() {
 
 /* ---------- Customize form modal ---------- */
 function openCustomize(id) {
+  vibrate();
+  pushHistory("customize:"+id);
   const p = getProduct(id);
   state.customizeOpen = true;
   state.customizeProductId = id;
