@@ -96,9 +96,37 @@ button:active, .card-media:active, .chip:active, .quicknav-item:active, .nav-ite
 .quicknav-label { font-size:10.5px; color:var(--brown); text-align:center; line-height:1.2; }
 .section-title { font-family:'Playfair Display',serif; font-style:italic; font-size:26px; text-align:center; margin:6px 0 2px; color:var(--ink); }
 .section-sub { text-align:center; font-size:12px; color:var(--muted); margin-bottom:14px; }
+
+/* Hero */
+.hero {
+  position:relative; margin:14px 18px 22px; border-radius:var(--radius-lg);
+  background-size:cover; background-position:center; min-height:340px;
+  display:flex; align-items:flex-end; overflow:hidden;
+}
+.hero-content { padding:26px 22px 26px; color:var(--white); }
+.hero-eyebrow {
+  display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:1.2px; text-transform:uppercase;
+  background:rgba(255,255,255,0.18); border:1px solid rgba(255,255,255,0.35); border-radius:999px;
+  padding:5px 12px; margin-bottom:12px; backdrop-filter:blur(2px);
+}
+.hero-title { font-family:'Playfair Display',serif; font-weight:600; font-size:clamp(26px,7vw,34px); line-height:1.15; margin:0 0 10px; }
+.hero-title em { font-style:italic; color:var(--gold-soft); }
+.hero-sub { font-size:12.5px; line-height:1.5; color:rgba(255,255,255,0.88); max-width:320px; margin:0 0 18px; }
+.hero-actions { display:flex; flex-wrap:wrap; gap:10px; }
+.btn-lg.outline.light { background:rgba(255,255,255,0.08); color:var(--white); border:1px solid rgba(255,255,255,0.55); backdrop-filter:blur(2px); }
+
+/* Trending / view-all */
+.trending-header { padding:0 18px; }
+.view-all-row { display:flex; justify-content:center; padding:4px 18px 26px; }
+
+/* Gallery sub-category chip row */
+.subchip-row { padding-top:0; margin-top:-6px; }
+.chip.subchip { background:var(--cream-soft); font-size:11.5px; padding:7px 14px; }
+.chip.subchip.active { background:var(--gold); color:var(--brown-deep); border-color:var(--gold); }
 .chip-row { display:flex; overflow-x:auto; gap:8px; padding:0 18px 12px; scrollbar-width:none; }
 .chip-row::-webkit-scrollbar { display:none; }
 .chip { flex-shrink:0; padding:9px 16px; border-radius:999px; border:1px solid var(--border); background:var(--white); font-size:12.5px; color:var(--brown); display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.chip svg { width:14px; height:14px; flex-shrink:0; }
 .chip.active { background:var(--brown-deep); color:var(--white); border-color:var(--brown-deep); }
 .filter-sort-row { display:flex; justify-content:flex-start; padding:0 18px 14px; gap:8px; }
 .pill-btn { flex:none; display:inline-flex; align-items:center; justify-content:center; gap:5px; padding:6px 12px; border-radius:999px; border:1px solid var(--border); background:var(--white); font-size:11px; color:var(--brown); }
@@ -282,14 +310,24 @@ const SHOP = {
   whatsappNumber: "919763622170" // <-- replace with the real WhatsApp number
 };
 
-const CATEGORIES = [
-  { id: "frames",   name: "Photo Frames",   icon: "frame" },
-  { id: "magnets",  name: "Fridge Magnets", icon: "magnet" },
-  { id: "mugs",     name: "Photo Mugs",     icon: "mug" },
-  { id: "keychains",name: "Keychains",      icon: "key" },
-  { id: "decor",    name: "Wall Decor",     icon: "wall" },
-  { id: "cushions", name: "Photo Cushions", icon: "cushion" }
+// Top-level gallery filter groups. "photo" bundles several raw product
+// categories together and exposes them as sub-filters (a "sub section").
+const CATEGORY_GROUPS = [
+  { id: "photo",     name: "Photo",      icon: "frame",
+    children: [
+      { id: "frames",   name: "Photo Frames",   icon: "frame" },
+      { id: "mugs",     name: "Photo Mugs",     icon: "mug" },
+      { id: "cushions", name: "Photo Cushions", icon: "cushion" }
+    ]
+  },
+  { id: "keychains", name: "Keychains",  icon: "key" },
+  { id: "decor",     name: "Home Decor", icon: "wall" },
+  { id: "magnets",   name: "Magnets",    icon: "magnet" }
 ];
+// Maps a product's raw category back to its top-level group + (optional) sub id.
+const RAW_TO_GROUP = { frames:"photo", mugs:"photo", cushions:"photo", keychains:"keychains", decor:"decor", magnets:"magnets" };
+function groupOf(rawCategory) { return RAW_TO_GROUP[rawCategory] || "all"; }
+function groupInfo(id) { return CATEGORY_GROUPS.find(g => g.id === id); }
 
 const PRODUCTS = [
   { id:"you-me-wooden-frame", name:"You & Me Wooden Frame", category:"frames", price:499, mrp:649, rating:4.5, reviews:128, bestseller:true,
@@ -342,8 +380,27 @@ const PRODUCTS = [
     delivery:"3 - 4 Days", returns:"7 Days Return Policy" }
 ];
 
-function getProducts(cat) { return (!cat || cat==="all") ? PRODUCTS : PRODUCTS.filter(p=>p.category===cat); }
+function getProducts(category, subcategory) {
+  if (!category || category === "all") return PRODUCTS;
+  if (subcategory) return PRODUCTS.filter(p => p.category === subcategory);
+  const group = groupInfo(category);
+  if (group && group.children) {
+    const ids = group.children.map(c => c.id);
+    return PRODUCTS.filter(p => ids.includes(p.category));
+  }
+  return PRODUCTS.filter(p => p.category === category);
+}
 function getProduct(id) { return PRODUCTS.find(p=>p.id===id); }
+
+// "Trending" ranking blends order volume (reviews as a proxy), star rating,
+// merchandising flags, and whether the shopper has favorited the item.
+function getTrendingProducts(limit) {
+  const wl = getWishlist();
+  return [...PRODUCTS].sort((a, b) => {
+    const score = p => (p.reviews||0) + (p.rating||0)*20 + (p.bestseller?60:0) + (p.trending?35:0) + (wl.includes(p.id)?120:0);
+    return score(b) - score(a);
+  }).slice(0, limit || 8);
+}
 
 /* ============================================================
    ICONS
@@ -394,8 +451,9 @@ function showToast(msg) {
    APP STATE + ROUTER (single file, no page reloads)
    ============================================================ */
 let state = {
-  view: "list",         // "list" | "detail" | "wishlist"
-  category: "all",
+  view: "home",          // "home" | "gallery" | "detail" | "wishlist"
+  category: "all",       // gallery top-level group filter
+  subcategory: null,     // gallery sub-filter (used within the "photo" group)
   search: "",
   sort: "newest",
   productId: null,
@@ -419,12 +477,28 @@ function pushHistory(label) {
 window.addEventListener("popstate", (e) => {
   if (state.customizeOpen) { state.customizeOpen = false; render(); return; }
   if (state.view === "detail" || state.view === "wishlist") {
-    state.view = "list";
+    state.view = "gallery";
+    render(); window.scrollTo(0,0);
+  } else if (state.view === "gallery") {
+    state.view = "home";
     render(); window.scrollTo(0,0);
   }
 });
 
-function goToList(category) { vibrate(); pushHistory("list"); state = {...state, view:"list", category: category||"all"}; render(); scrollAppTop(); }
+function goToHome() { vibrate(); pushHistory("home"); state = {...state, view:"home"}; render(); scrollAppTop(); }
+function goToGallery(category, subcategory) {
+  vibrate(); pushHistory("gallery");
+  state = {...state, view:"gallery", category: category||"all", subcategory: subcategory||null};
+  render(); scrollAppTop();
+  const input = document.getElementById("searchInput");
+  if (input && state.focusSearchOnLoad) { input.focus(); state.focusSearchOnLoad = false; }
+}
+// Used from a product's Back button / related items to land in the right gallery group.
+function goToProductCategory(rawCategory) {
+  const group = groupOf(rawCategory);
+  const sub = group === "photo" ? rawCategory : null;
+  goToGallery(group, sub);
+}
 function goToWishlist() { vibrate(); pushHistory("wishlist"); state = {...state, view:"wishlist"}; render(); scrollAppTop(); }
 function goToProduct(id) {
   vibrate();
@@ -464,8 +538,57 @@ function productCard(p) {
 }
 function quickOrder(id) { const p=getProduct(id); if(p) window.open(waLink(waOrderMsg(p)), "_blank"); }
 
-function renderList() {
-  let list = getProducts(state.category);
+function renderHero() {
+  const heroImg = PRODUCTS[0].images[0];
+  return `
+    <section class="hero" style="background-image:linear-gradient(180deg, rgba(42,24,16,0.15), rgba(42,24,16,0.72)), url('${heroImg}')">
+      <div class="hero-content">
+        <span class="hero-eyebrow">Handcrafted Keepsakes</span>
+        <h1 class="hero-title">Turn Your Photos<br>Into <em>Memories</em></h1>
+        <p class="hero-sub">Personalized frames, mugs, magnets &amp; more — made with love, delivered with care.</p>
+        <div class="hero-actions">
+          <button class="btn-lg dark" onclick="goToGallery('all')">Explore Gallery</button>
+          <a class="btn-lg outline light" href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank">${icon("whatsapp")} Chat With Us</a>
+        </div>
+      </div>
+    </section>`;
+}
+
+function renderHome() {
+  const trending = getTrendingProducts(8);
+  return `
+    <header class="topbar">
+      <div class="topbar-row">
+        <span class="logo">Memories<span class="heart">♡</span></span>
+        <div class="topbar-actions">
+          <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
+        </div>
+      </div>
+      <div class="search-bar" onclick="state.focusSearchOnLoad=true; goToGallery('all')">
+        <input type="text" placeholder="Search for frames, magnets, gifts..." readonly>
+        <button class="search-go">${icon("search")}</button>
+      </div>
+    </header>
+
+    ${renderHero()}
+
+    <div class="trending-header">
+      <div>
+        <div class="section-title" style="margin-top:18px;">Trending Now</div>
+        <p class="section-sub">Our most ordered &amp; most-loved picks</p>
+      </div>
+    </div>
+
+    <div class="grid">${trending.map(productCard).join("")}</div>
+
+    <div class="view-all-row">
+      <button class="btn-lg outline" onclick="goToGallery('all')">View Full Gallery <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+  `;
+}
+
+function renderGallery() {
+  let list = getProducts(state.category, state.subcategory);
   if (state.search.trim()) {
     const q = state.search.toLowerCase();
     list = list.filter(p => p.name.toLowerCase().includes(q) || p.shortDesc.toLowerCase().includes(q));
@@ -475,15 +598,16 @@ function renderList() {
   else if (state.sort==="rating") list = [...list].sort((a,b)=>b.rating-a.rating);
 
   const sortLabel = {newest:"Newest", priceLow:"Price ↑", priceHigh:"Price ↓", rating:"Top Rated"}[state.sort];
-  const allChips = [{id:"all",name:"All Products"}, ...CATEGORIES];
+  const allChips = [{id:"all",name:"All"}, ...CATEGORY_GROUPS];
+  const activeGroup = groupInfo(state.category);
+  const showSubchips = activeGroup && activeGroup.children;
 
   return `
     <header class="topbar">
       <div class="topbar-row">
-        <span class="logo">Memories<span class="heart">♡</span></span>
-        <div class="topbar-actions">
-          <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
-        </div>
+        <button class="icon-btn" onclick="goToHome()">${icon("back")}</button>
+        <span class="logo" style="font-size:20px;">Memories<span class="heart">♡</span></span>
+        <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
       </div>
       <div class="search-bar">
         <input id="searchInput" type="text" placeholder="Search for frames, magnets, gifts..." value="${state.search}">
@@ -491,21 +615,19 @@ function renderList() {
       </div>
     </header>
 
-    <div class="quicknav">
-      ${CATEGORIES.map(c => `
-        <button class="quicknav-item" onclick="goToList('${c.id}')">
-          <div class="quicknav-icon ${state.category===c.id?"active":""}">${icon(c.icon)}</div>
-          <div class="quicknav-label">${c.name}</div>
-        </button>
-      `).join("")}
-    </div>
-
     <div class="section-title">Our Gallery</div>
     <p class="section-sub">Beautiful memories, beautifully framed.</p>
 
     <div class="chip-row">
-      ${allChips.map(c => `<button class="chip ${state.category===c.id?"active":""}" onclick="goToList('${c.id}')">${c.name}</button>`).join("")}
+      ${allChips.map(c => `<button class="chip ${state.category===c.id?"active":""}" onclick="goToGallery('${c.id}')">${c.icon?icon(c.icon):""} ${c.name}</button>`).join("")}
     </div>
+
+    ${showSubchips ? `
+    <div class="chip-row subchip-row">
+      <button class="chip subchip ${!state.subcategory?"active":""}" onclick="goToGallery('${activeGroup.id}')">All Photo</button>
+      ${activeGroup.children.map(c => `<button class="chip subchip ${state.subcategory===c.id?"active":""}" onclick="goToGallery('${activeGroup.id}','${c.id}')">${c.name}</button>`).join("")}
+    </div>
+    ` : ""}
 
     <div class="filter-sort-row">
       <button class="pill-btn">${icon("filter")} Filter</button>
@@ -519,11 +641,11 @@ function renderList() {
 
 function renderDetail() {
   const p = getProduct(state.productId);
-  if (!p) return `<div class="back-row"><button class="back-btn" onclick="goToList()">${icon("back")} Back</button></div><div class="empty-state">Product not found.</div>`;
+  if (!p) return `<div class="back-row"><button class="back-btn" onclick="goToHome()">${icon("back")} Back</button></div><div class="empty-state">Product not found.</div>`;
   const related = PRODUCTS.filter(x => x.category===p.category && x.id!==p.id).slice(0,4);
   return `
     <div class="back-row">
-      <button class="back-btn" onclick="goToList('${p.category}')">${icon("back")} Back</button>
+      <button class="back-btn" onclick="goToProductCategory('${p.category}')">${icon("back")} Back</button>
       <span class="logo" style="font-size:18px;">Memories<span class="heart">♡</span></span>
       <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
     </div>
@@ -584,7 +706,7 @@ function renderWishlist() {
   const products = PRODUCTS.filter(p => wl.includes(p.id));
   return `
     <div class="back-row">
-      <button class="back-btn" onclick="goToList('all')">${icon("back")} Back</button>
+      <button class="back-btn" onclick="goToGallery('all')">${icon("back")} Back</button>
       <span class="logo" style="font-size:18px;">Memories<span class="heart">♡</span></span>
       <span style="width:36px;"></span>
     </div>
@@ -600,12 +722,14 @@ function render() {
   const root = document.getElementById("root");
   if (state.view === "detail") root.innerHTML = renderDetail();
   else if (state.view === "wishlist") root.innerHTML = renderWishlist();
-  else root.innerHTML = renderList();
+  else if (state.view === "gallery") root.innerHTML = renderGallery();
+  else root.innerHTML = renderHome();
 
-  if (state.view === "list") {
+  if (state.view === "gallery") {
     const input = document.getElementById("searchInput");
     if (input) {
       input.addEventListener("input", (e) => { state.search = e.target.value; render(); input.focus(); input.setSelectionRange(input.value.length, input.value.length); });
+      if (state.focusSearchOnLoad) { input.focus(); state.focusSearchOnLoad = false; }
     }
     const sortBtn = document.getElementById("sortBtn");
     if (sortBtn) {
@@ -713,8 +837,8 @@ if (document.readyState === "loading") {
 function renderBottomNav() {
   const wl = getWishlist();
   document.getElementById("bottomNav").innerHTML = `
-    <button class="nav-item ${state.view==="list" && state.category==="all" ? "active":""}" onclick="goToList('all')">${icon("home")}<span>Home</span></button>
-    <button class="nav-item ${state.view==="detail" ? "active":""}" onclick="goToList(state.category)">${icon("grid")}<span>Menu</span></button>
+    <button class="nav-item ${state.view==="home" ? "active":""}" onclick="goToHome()">${icon("home")}<span>Home</span></button>
+    <button class="nav-item ${(state.view==="gallery"||state.view==="detail") ? "active":""}" onclick="goToGallery('all')">${icon("grid")}<span>Gallery</span></button>
     <button class="nav-item ${state.view==="wishlist" ? "active":""}" onclick="goToWishlist()">${icon(wl.length?"heartFilled":"heart")}<span>Wishlist (${wl.length})</span></button>
     <a class="nav-item" href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank">${icon("whatsapp")}<span>Order</span></a>
   `;
