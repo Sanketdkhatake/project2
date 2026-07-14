@@ -73,11 +73,16 @@ button:active, .card-media:active, .chip:active, .quicknav-item:active, .nav-ite
   transform: scale(0.94); opacity:0.85;
 }
 .card-media:active img { transform: scale(1.03); }
-/* Minimum comfortable touch target size on touch devices */
+/* Minimum comfortable touch target size on touch devices (Apple/Google's
+   44px guideline) so every tap lands first time on a phone */
 @media (pointer: coarse) {
-  .icon-btn, .wish-btn, .modal-close, .qty-control button { min-width:40px; min-height:40px; }
+  .icon-btn, .wish-btn, .modal-close, .qty-control button,
+  .pd-thumb, .search-go, .scroll-top-fab { min-width:44px; min-height:44px; }
+  .chip, .pill-btn, .size-opt, .nav-item, .quicknav-item { min-height:40px; }
+  .btn, .btn-lg { min-height:40px; }
   .search-bar input, .modal-input, .modal-textarea { font-size:16px; }
 }
+.icon-btn, .wish-btn, .modal-close { display:flex; align-items:center; justify-content:center; }
 .logo { font-family:'Yesteryear',cursive; font-size:26px; color:var(--ink); display:inline-flex; align-items:center; gap:6px; line-height:1; }
 .logo .heart { color:var(--gold); font-size:15px; transform:translateY(-8px); }
 .topbar { position:sticky; top:0; z-index:20; background:var(--cream); padding:calc(14px + var(--safe-t)) 18px 10px; border-bottom:1px solid var(--border); }
@@ -292,6 +297,74 @@ img[data-loaded="0"] { animation: shimmer 1.2s ease-in-out infinite; }
   margin-bottom:10px;
 }
 .modal-input::placeholder { color:var(--muted); }
+
+/* ---------- Search: clear button + empty/active states ---------- */
+.search-bar.has-value { border-color:var(--gold); }
+.search-clear {
+  width:26px; height:26px; border-radius:50%; border:none; background:var(--cream-soft);
+  color:var(--muted); display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0;
+}
+
+/* ---------- Discount ribbon ---------- */
+.badge-discount {
+  position:absolute; top:8px; right:8px; background:var(--brown-deep); color:var(--gold-soft);
+  font-size:9.5px; font-weight:700; padding:3px 8px; border-radius:999px; letter-spacing:0.2px;
+}
+.card-media .badge-discount { right:44px; }
+.pd-discount {
+  display:inline-block; background:var(--brown-deep); color:var(--gold-soft); font-size:11px;
+  font-weight:700; padding:3px 10px; border-radius:999px; margin-left:2px;
+}
+
+/* ---------- Category-tinted gallery header (each group gets its own accent) ---------- */
+.gallery-hero {
+  margin:14px 18px 18px; border-radius:var(--radius-lg); padding:22px 20px;
+  background:linear-gradient(135deg, var(--tint-a, #EFE0BD), var(--tint-b, #E6C77A));
+  position:relative; overflow:hidden;
+}
+.gallery-hero::after {
+  content:""; position:absolute; right:-30px; top:-30px; width:140px; height:140px; border-radius:50%;
+  background:rgba(255,255,255,0.18);
+}
+.gallery-hero .gh-eyebrow { font-size:10.5px; font-weight:700; letter-spacing:1.4px; text-transform:uppercase; color:var(--brown-deep); opacity:0.75; }
+.gallery-hero .gh-title { font-family:'Playfair Display',serif; font-style:italic; font-size:24px; color:var(--brown-deep); margin:4px 0 3px; position:relative; z-index:1; }
+.gallery-hero .gh-sub { font-size:11.5px; color:var(--brown-deep); opacity:0.75; position:relative; z-index:1; }
+.gallery-hero .gh-count { font-size:11px; font-weight:700; color:var(--brown-deep); background:rgba(255,255,255,0.55); display:inline-flex; padding:3px 10px; border-radius:999px; margin-top:8px; }
+
+/* ---------- Recently viewed ---------- */
+.recent-scroll { display:flex; gap:10px; overflow-x:auto; padding:0 18px 4px; scrollbar-width:none; }
+.recent-scroll::-webkit-scrollbar { display:none; }
+.recent-chip { flex-shrink:0; width:64px; text-align:center; background:none; border:none; }
+.recent-chip img { width:56px; height:56px; border-radius:14px; object-fit:cover; border:1px solid var(--border); }
+.recent-chip span { display:block; font-size:9.5px; color:var(--brown); margin-top:4px; line-height:1.2; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ---------- Bottom sheet option list (Sort / Filter) ---------- */
+.sheet-option-row { display:flex; flex-direction:column; gap:2px; margin-bottom:18px; }
+.sheet-option {
+  display:flex; align-items:center; justify-content:space-between; padding:13px 14px;
+  border-radius:var(--radius-md); background:var(--white); border:1px solid var(--border); margin-bottom:8px; font-size:13px; color:var(--brown);
+}
+.sheet-option.active { border-color:var(--brown-deep); background:var(--cream); font-weight:600; color:var(--ink); }
+.sheet-option .dot { width:18px; height:18px; border-radius:50%; border:1.5px solid var(--border); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.sheet-option.active .dot { border-color:var(--brown-deep); background:var(--brown-deep); color:var(--white); }
+.range-row { display:flex; align-items:center; gap:10px; margin-bottom:18px; }
+.range-row input[type=range] { flex:1; accent-color:var(--brown-deep); }
+.range-value { font-size:12px; font-weight:600; color:var(--brown-deep); min-width:64px; text-align:right; }
+.pill-btn.has-filter { background:var(--brown-deep); color:var(--white); border-color:var(--brown-deep); }
+
+/* ---------- Share button on product detail ---------- */
+.pd-share { display:flex; align-items:center; justify-content:center; gap:6px; }
+
+/* ---------- Section title flourish ---------- */
+.section-title { position:relative; }
+.section-title::after {
+  content:""; display:block; width:34px; height:2px; margin:6px auto 0;
+  background:linear-gradient(90deg, var(--gold), var(--gold-soft)); border-radius:2px;
+}
+
+/* ---------- Wishlist heart pop animation ---------- */
+@keyframes heartPop { 0%{transform:scale(1);} 35%{transform:scale(1.35);} 60%{transform:scale(0.9);} 100%{transform:scale(1);} }
+.wish-btn.pop { animation: heartPop .35s ease; }
 </style>
 </head>
 <body>
@@ -300,6 +373,7 @@ img[data-loaded="0"] { animation: shimmer 1.2s ease-in-out infinite; }
   <nav class="bottom-nav" id="bottomNav"></nav>
 </div>
 <div id="modalRoot"></div>
+<div id="sheetRoot"></div>
 
 <script>
 /* ============================================================
@@ -310,74 +384,252 @@ const SHOP = {
   whatsappNumber: "919763622170" // <-- replace with the real WhatsApp number
 };
 
-// Top-level gallery filter groups. "photo" bundles several raw product
-// categories together and exposes them as sub-filters (a "sub section").
+// Top-level gallery filter groups, in the order the chips appear.
+// "photo" still bundles frames + cushions together with sub-filters;
+// mugs now gets its own top-level tab, positioned right after Photo.
 const CATEGORY_GROUPS = [
-  { id: "photo",     name: "Photo",      icon: "frame",
+  { id: "photo",     name: "Photo",       icon: "frame",
     children: [
       { id: "frames",   name: "Photo Frames",   icon: "frame" },
-      { id: "mugs",     name: "Photo Mugs",     icon: "mug" },
       { id: "cushions", name: "Photo Cushions", icon: "cushion" }
     ]
   },
+  { id: "mugs",      name: "Photo Mugs", icon: "mug" },
+  { id: "magnets",   name: "Magnets",    icon: "magnet" },
   { id: "keychains", name: "Keychains",  icon: "key" },
-  { id: "decor",     name: "Home Decor", icon: "wall" },
-  { id: "magnets",   name: "Magnets",    icon: "magnet" }
+  { id: "decor",     name: "Home Decor", icon: "wall" }
 ];
 // Maps a product's raw category back to its top-level group + (optional) sub id.
-const RAW_TO_GROUP = { frames:"photo", mugs:"photo", cushions:"photo", keychains:"keychains", decor:"decor", magnets:"magnets" };
+const RAW_TO_GROUP = { frames:"photo", cushions:"photo", mugs:"mugs", keychains:"keychains", decor:"decor", magnets:"magnets" };
 function groupOf(rawCategory) { return RAW_TO_GROUP[rawCategory] || "all"; }
 function groupInfo(id) { return CATEGORY_GROUPS.find(g => g.id === id); }
 
+/* ============================================================
+   PRODUCTS — this is the ONLY section you need to touch to add,
+   remove, or edit an item in the shop.
+
+   HOW TO ADD A NEW PRODUCT
+   -------------------------------------------------------------
+   1. Copy one whole product block below, from the opening { down
+      to the closing },
+   2. Paste it just above the closing "];" at the bottom of this list
+   3. Give it a unique "id" (no spaces — use hyphens)
+   4. Fill in your own name / price / images / description
+   5. Save the file — that's it, no other code needs to change
+
+   FIELD GUIDE
+   -------------------------------------------------------------
+   id          unique slug, e.g. "wooden-photo-frame" (no spaces)
+   name        product title shown everywhere
+   category    one of: frames, mugs, cushions, keychains, decor, magnets
+   price       selling price (numbers only, no ₹ symbol)
+   mrp         original "before discount" price — set equal to price
+               (or delete this line) if there's no discount
+   rating      star rating out of 5, e.g. 4.5
+   reviews     number of reviews to display
+   bestseller  set to true to show a "Bestseller" badge — remove the
+   trending    line entirely (or set to false) if it doesn't apply
+   images      list of photo URLs — first one is the main photo, add
+               as many as you want, shoppers can swipe through them
+   sizes       list of size / variant options shown as buttons
+   shortDesc   one-line description shown on the product card
+   description longer paragraph shown on the product detail page
+   features    bullet points (material, print quality, etc.)
+   delivery    delivery time text (stored, not shown on-page yet)
+   returns     returns policy text (stored, not shown on-page yet)
+   ============================================================ */
 const PRODUCTS = [
-  { id:"you-me-wooden-frame", name:"You & Me Wooden Frame", category:"frames", price:499, mrp:649, rating:4.5, reviews:128, bestseller:true,
-    images:["https://picsum.photos/seed/frame1a/600/600","https://picsum.photos/seed/frame1b/600/600","https://picsum.photos/seed/frame1c/600/600"],
-    sizes:["8x12 Inch","12x18 Inch"], shortDesc:"Premium quality wooden frame perfect for your loved ones.",
-    description:"Capture your special moments in our premium quality wooden frame. Beautifully crafted to keep your memories alive forever.",
-    features:["Material: Premium Quality Wood","Print: High Resolution","Glass: Crystal Clear","Stand: Tabletop with Wall Hanging"],
-    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
-  { id:"polaroid-fridge-magnet", name:"Polaroid Fridge Magnet", category:"magnets", price:149, mrp:199, rating:4.5, reviews:96, trending:true,
-    images:["https://picsum.photos/seed/magnet1a/600/600","https://picsum.photos/seed/magnet1b/600/600","https://picsum.photos/seed/magnet1c/600/600"],
-    sizes:["Set of 3","Set of 6"], shortDesc:"High quality photo magnets to decorate your fridge.",
-    description:"Turn your favourite pictures into a mini gallery on your fridge. Printed on durable, fade-resistant stock.",
-    features:["Material: Durable Photo Paper + Magnet","Print: High Resolution","Finish: Matte"],
-    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
-  { id:"photo-printed-mug", name:"Photo Printed Mug", category:"mugs", price:299, mrp:349, rating:4.5, reviews:87, bestseller:true,
-    images:["https://picsum.photos/seed/mug1a/600/600","https://picsum.photos/seed/mug1b/600/600"],
-    sizes:["325 ml"], shortDesc:"Premium ceramic mug with your favorite photo.",
-    description:"Start every morning with a memory. Dishwasher and microwave safe, printed with a photo of your choice.",
-    features:["Material: Premium Ceramic","Capacity: 325 ml","Safe For: Dishwasher & Microwave"],
-    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
-  { id:"led-photo-frame", name:"LED Photo Frame", category:"frames", price:799, mrp:999, rating:4.5, reviews:64, trending:true,
-    images:["https://picsum.photos/seed/led1a/600/600","https://picsum.photos/seed/led1b/600/600"],
-    sizes:["6x8 Inch","8x10 Inch"], shortDesc:"Glowing LED frame to light up your special memories.",
-    description:"A warm string of LED lights frames your photo for a soft, glowing display — perfect for a bedside table or gift shelf.",
-    features:["Material: Acrylic + Warm LED Lights","Power: USB / Battery","Print: High Resolution"],
-    delivery:"3 - 4 Days", returns:"7 Days Return Policy" },
-  { id:"custom-photo-keychain", name:"Custom Photo Keychain", category:"keychains", price:199, mrp:249, rating:4.4, reviews:52,
-    images:["https://picsum.photos/seed/key1a/600/600","https://picsum.photos/seed/key1b/600/600"],
-    sizes:["Square","Round","Heart"], shortDesc:"Carry your memories wherever you go.",
-    description:"A pocket-sized keepsake. Your photo, sealed in a sturdy acrylic charm, so a favourite memory is always with you.",
-    features:["Material: Acrylic + Metal Ring","Print: High Resolution","Shapes: Square, Round, Heart"],
-    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
-  { id:"collage-photo-frame", name:"Collage Photo Frame", category:"decor", price:699, mrp:899, rating:4.5, reviews:75, bestseller:true,
-    images:["https://picsum.photos/seed/collage1a/600/600","https://picsum.photos/seed/collage1b/600/600"],
-    sizes:["9 Photos","12 Photos"], shortDesc:"Multiple memories in one beautiful frame.",
-    description:"Fit an entire story on one wall. This collage frame holds several of your favourite photos in a single elegant layout.",
-    features:["Material: Premium Wood","Layout: Grid Collage","Print: High Resolution"],
-    delivery:"3 - 4 Days", returns:"7 Days Return Policy" },
-  { id:"acrylic-photo-frame", name:"Acrylic Photo Frame", category:"frames", price:679, mrp:799, rating:4.6, reviews:58,
-    images:["https://picsum.photos/seed/acrylic1a/600/600","https://picsum.photos/seed/acrylic1b/600/600"],
-    sizes:["6x6 Inch","8x8 Inch"], shortDesc:"A crystal-clear, modern way to display your photo.",
-    description:"Sleek, minimal, modern. This acrylic block frame gives your photo a floating, gallery-quality look on any desk or shelf.",
-    features:["Material: Premium Acrylic","Print: High Resolution UV Print","Finish: Glossy"],
-    delivery:"2 - 3 Days", returns:"7 Days Return Policy" },
-  { id:"photo-printed-cushion", name:"Photo Printed Cushion", category:"cushions", price:499, mrp:599, rating:4.5, reviews:69,
-    images:["https://picsum.photos/seed/cushion1a/600/600","https://picsum.photos/seed/cushion1b/600/600"],
-    sizes:["12x12 Inch","16x16 Inch"], shortDesc:"A soft, huggable way to keep memories close.",
-    description:"Your favourite photo, printed on a soft velvet cushion cover — cosy, personal, and a lovely gift for someone you love.",
-    features:["Material: Velvet Cover","Fill: Soft Fibre (included)","Print: High Resolution"],
-    delivery:"3 - 4 Days", returns:"7 Days Return Policy" }
+
+  // ---- TEMPLATE: copy this whole block to add a new product ----
+  // {
+  //   id: "unique-product-slug",
+  //   name: "Product Name",
+  //   category: "frames",
+  //   price: 499,
+  //   mrp: 649,
+  //   rating: 4.5,
+  //   reviews: 10,
+  //   bestseller: false,
+  //   trending: false,
+  //   images: [
+  //     "https://example.com/photo1.jpg",
+  //     "https://example.com/photo2.jpg"
+  //   ],
+  //   sizes: ["Small", "Large"],
+  //   shortDesc: "One-line description for the product card.",
+  //   description: "Longer description shown on the product detail page.",
+  //   features: ["Material: ...", "Print: ...", "Finish: ..."],
+  //   delivery: "2 - 3 Days",
+  //   returns: "7 Days Return Policy"
+  // },
+
+  {
+    id: "you-me-wooden-frame",
+    name: "You & Me Wooden Frame",
+    category: "frames",
+    price: 499,
+    mrp: 649,
+    rating: 4.5,
+    reviews: 128,
+    bestseller: true,
+    images: [
+      "https://picsum.photos/seed/frame1a/600/600",
+      "https://picsum.photos/seed/frame1b/600/600",
+      "https://picsum.photos/seed/frame1c/600/600"
+    ],
+    sizes: ["8x12 Inch", "12x18 Inch"],
+    shortDesc: "Premium quality wooden frame perfect for your loved ones.",
+    description: "Capture your special moments in our premium quality wooden frame. Beautifully crafted to keep your memories alive forever.",
+    features: ["Material: Premium Quality Wood", "Print: High Resolution", "Glass: Crystal Clear", "Stand: Tabletop with Wall Hanging"],
+    delivery: "2 - 3 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "polaroid-fridge-magnet",
+    name: "Polaroid Fridge Magnet",
+    category: "magnets",
+    price: 149,
+    mrp: 199,
+    rating: 4.5,
+    reviews: 96,
+    trending: true,
+    images: [
+      "https://picsum.photos/seed/magnet1a/600/600",
+      "https://picsum.photos/seed/magnet1b/600/600",
+      "https://picsum.photos/seed/magnet1c/600/600"
+    ],
+    sizes: ["Set of 3", "Set of 6"],
+    shortDesc: "High quality photo magnets to decorate your fridge.",
+    description: "Turn your favourite pictures into a mini gallery on your fridge. Printed on durable, fade-resistant stock.",
+    features: ["Material: Durable Photo Paper + Magnet", "Print: High Resolution", "Finish: Matte"],
+    delivery: "2 - 3 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "photo-printed-mug",
+    name: "Photo Printed Mug",
+    category: "mugs",
+    price: 299,
+    mrp: 349,
+    rating: 4.5,
+    reviews: 87,
+    bestseller: true,
+    images: [
+      "https://picsum.photos/seed/mug1a/600/600",
+      "https://picsum.photos/seed/mug1b/600/600"
+    ],
+    sizes: ["325 ml"],
+    shortDesc: "Premium ceramic mug with your favorite photo.",
+    description: "Start every morning with a memory. Dishwasher and microwave safe, printed with a photo of your choice.",
+    features: ["Material: Premium Ceramic", "Capacity: 325 ml", "Safe For: Dishwasher & Microwave"],
+    delivery: "2 - 3 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "led-photo-frame",
+    name: "LED Photo Frame",
+    category: "frames",
+    price: 799,
+    mrp: 999,
+    rating: 4.5,
+    reviews: 64,
+    trending: true,
+    images: [
+      "https://picsum.photos/seed/led1a/600/600",
+      "https://picsum.photos/seed/led1b/600/600"
+    ],
+    sizes: ["6x8 Inch", "8x10 Inch"],
+    shortDesc: "Glowing LED frame to light up your special memories.",
+    description: "A warm string of LED lights frames your photo for a soft, glowing display — perfect for a bedside table or gift shelf.",
+    features: ["Material: Acrylic + Warm LED Lights", "Power: USB / Battery", "Print: High Resolution"],
+    delivery: "3 - 4 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "custom-photo-keychain",
+    name: "Custom Photo Keychain",
+    category: "keychains",
+    price: 199,
+    mrp: 249,
+    rating: 4.4,
+    reviews: 52,
+    images: [
+      "https://picsum.photos/seed/key1a/600/600",
+      "https://picsum.photos/seed/key1b/600/600"
+    ],
+    sizes: ["Square", "Round", "Heart"],
+    shortDesc: "Carry your memories wherever you go.",
+    description: "A pocket-sized keepsake. Your photo, sealed in a sturdy acrylic charm, so a favourite memory is always with you.",
+    features: ["Material: Acrylic + Metal Ring", "Print: High Resolution", "Shapes: Square, Round, Heart"],
+    delivery: "2 - 3 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "collage-photo-frame",
+    name: "Collage Photo Frame",
+    category: "decor",
+    price: 699,
+    mrp: 899,
+    rating: 4.5,
+    reviews: 75,
+    bestseller: true,
+    images: [
+      "https://picsum.photos/seed/collage1a/600/600",
+      "https://picsum.photos/seed/collage1b/600/600"
+    ],
+    sizes: ["9 Photos", "12 Photos"],
+    shortDesc: "Multiple memories in one beautiful frame.",
+    description: "Fit an entire story on one wall. This collage frame holds several of your favourite photos in a single elegant layout.",
+    features: ["Material: Premium Wood", "Layout: Grid Collage", "Print: High Resolution"],
+    delivery: "3 - 4 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "acrylic-photo-frame",
+    name: "Acrylic Photo Frame",
+    category: "frames",
+    price: 679,
+    mrp: 799,
+    rating: 4.6,
+    reviews: 58,
+    images: [
+      "https://picsum.photos/seed/acrylic1a/600/600",
+      "https://picsum.photos/seed/acrylic1b/600/600"
+    ],
+    sizes: ["6x6 Inch", "8x8 Inch"],
+    shortDesc: "A crystal-clear, modern way to display your photo.",
+    description: "Sleek, minimal, modern. This acrylic block frame gives your photo a floating, gallery-quality look on any desk or shelf.",
+    features: ["Material: Premium Acrylic", "Print: High Resolution UV Print", "Finish: Glossy"],
+    delivery: "2 - 3 Days",
+    returns: "7 Days Return Policy"
+  },
+
+  {
+    id: "photo-printed-cushion",
+    name: "Photo Printed Cushion",
+    category: "cushions",
+    price: 499,
+    mrp: 599,
+    rating: 4.5,
+    reviews: 69,
+    images: [
+      "https://picsum.photos/seed/cushion1a/600/600",
+      "https://picsum.photos/seed/cushion1b/600/600"
+    ],
+    sizes: ["12x12 Inch", "16x16 Inch"],
+    shortDesc: "A soft, huggable way to keep memories close.",
+    description: "Your favourite photo, printed on a soft velvet cushion cover — cosy, personal, and a lovely gift for someone you love.",
+    features: ["Material: Velvet Cover", "Fill: Soft Fibre (included)", "Print: High Resolution"],
+    delivery: "3 - 4 Days",
+    returns: "7 Days Return Policy"
+  }
+
 ];
 
 function getProducts(category, subcategory) {
@@ -432,13 +684,28 @@ function waLink(msg) { return `https://wa.me/${SHOP.whatsappNumber}?text=${encod
 function waOrderMsg(p, size, qty) {
   return `Hi ${SHOP.name}! I'd like to order:\n\n*${p.name}*\nSize: ${size||p.sizes[0]}\nQty: ${qty||1}\nPrice: ₹${p.price}\n\nPlease confirm availability.`;
 }
+function discountPct(p) { return (p.mrp && p.mrp > p.price) ? Math.round((1 - p.price / p.mrp) * 100) : 0; }
 function getWishlist() { try { return JSON.parse(sessionStorage.getItem("wishlist")||"[]"); } catch { return []; } }
-function toggleWish(id) {
+function getRecent() { try { return JSON.parse(sessionStorage.getItem("recent")||"[]"); } catch { return []; } }
+function addRecent(id) {
+  let list = getRecent().filter(x => x !== id);
+  list.unshift(id);
+  sessionStorage.setItem("recent", JSON.stringify(list.slice(0, 10)));
+}
+function toggleWish(id, evt) {
   vibrate(15);
   let list = getWishlist();
+  const adding = !list.includes(id);
   if (list.includes(id)) list = list.filter(x=>x!==id); else list.push(id);
   sessionStorage.setItem("wishlist", JSON.stringify(list));
   render();
+  if (adding) {
+    showToast("Added to wishlist ♥");
+    document.querySelectorAll(`.wish-btn[data-pid="${id}"]`).forEach(b => {
+      b.classList.add("pop");
+      setTimeout(() => b.classList.remove("pop"), 350);
+    });
+  }
 }
 function showToast(msg) {
   let t = document.getElementById("toast");
@@ -463,7 +730,10 @@ let state = {
   customizeOpen: false,
   customizeProductId: null,
   customizeImageData: null, // data URL for preview only
-  customizeSize: null
+  customizeSize: null,
+  sheetOpen: null,     // null | "sort" | "filter"
+  maxPrice: null,       // active price ceiling filter, or null for no filter
+  filterDraftPrice: 1000
 };
 
 function vibrate(ms) { try { if (navigator.vibrate) navigator.vibrate(ms||10); } catch(e) {} }
@@ -475,6 +745,7 @@ function pushHistory(label) {
   try { history.pushState({ appNav:true, ts:Date.now(), label }, "", ""); } catch(e) {}
 }
 window.addEventListener("popstate", (e) => {
+  if (state.sheetOpen) { state.sheetOpen = null; render(); return; }
   if (state.customizeOpen) { state.customizeOpen = false; render(); return; }
   if (state.view === "detail" || state.view === "wishlist") {
     state.view = "gallery";
@@ -504,6 +775,7 @@ function goToProduct(id) {
   vibrate();
   pushHistory("detail:"+id);
   const p = getProduct(id);
+  addRecent(id);
   state = {...state, view:"detail", productId:id, activeImage:0, activeSize: p ? p.sizes[0] : null, qty:1};
   render(); scrollAppTop();
 }
@@ -517,13 +789,15 @@ function productCard(p) {
   const wl = getWishlist();
   const wished = wl.includes(p.id);
   const tag = p.bestseller ? "Bestseller" : (p.trending ? "Trending" : "");
+  const disc = discountPct(p);
   return `
   <div class="card">
     <div class="card-media" onclick="goToProduct('${p.id}')">
       <img src="${p.images[0]}" alt="${p.name}" loading="lazy">
       ${tag ? `<span class="badge-tag">${tag}</span>` : ""}
+      ${disc ? `<span class="badge-discount">${disc}% OFF</span>` : ""}
     </div>
-    <button class="wish-btn ${wished?"active":""}" onclick="toggleWish('${p.id}')">${icon(wished?"heartFilled":"heart")}</button>
+    <button class="wish-btn ${wished?"active":""}" data-pid="${p.id}" onclick="toggleWish('${p.id}', event)">${icon(wished?"heartFilled":"heart")}</button>
     <div class="card-body">
       <div class="card-name" onclick="goToProduct('${p.id}')">${p.name}</div>
       <div class="card-desc">${p.shortDesc}</div>
@@ -554,15 +828,27 @@ function renderHero() {
     </section>`;
 }
 
+function renderRecentlyViewed() {
+  const ids = getRecent();
+  const items = ids.map(getProduct).filter(Boolean);
+  if (!items.length) return "";
+  return `
+    <div class="related-title" style="margin-top:4px;">Recently Viewed</div>
+    <div class="recent-scroll">
+      ${items.map(p => `
+        <button class="recent-chip" onclick="goToProduct('${p.id}')">
+          <img src="${p.images[0]}" alt="${p.name}">
+          <span>${p.name}</span>
+        </button>`).join("")}
+    </div>
+  `;
+}
 function renderHome() {
   const trending = getTrendingProducts(8);
   return `
     <header class="topbar">
       <div class="topbar-row">
         <span class="logo">Memories<span class="heart">♡</span></span>
-        <div class="topbar-actions">
-          <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
-        </div>
       </div>
       <div class="search-bar" onclick="state.focusSearchOnLoad=true; goToGallery('all')">
         <input type="text" placeholder="Search for frames, magnets, gifts..." readonly>
@@ -571,6 +857,8 @@ function renderHome() {
     </header>
 
     ${renderHero()}
+
+    ${renderRecentlyViewed()}
 
     <div class="trending-header">
       <div>
@@ -587,36 +875,56 @@ function renderHome() {
   `;
 }
 
+const CATEGORY_TINT = {
+  all:      ["#F3E7C8", "#E9D19A"],
+  photo:    ["#F1E2C0", "#E6C77A"],
+  mugs:     ["#F5E4D3", "#E8B98A"],
+  magnets:  ["#F0DCD3", "#E0AD97"],
+  keychains:["#E4D9EC", "#C9B3DE"],
+  decor:    ["#D9E6DE", "#A9CBB4"]
+};
+function applyPriceFilter(list) {
+  if (!state.maxPrice) return list;
+  return list.filter(p => p.price <= state.maxPrice);
+}
 function renderGallery() {
   let list = getProducts(state.category, state.subcategory);
   if (state.search.trim()) {
     const q = state.search.toLowerCase();
     list = list.filter(p => p.name.toLowerCase().includes(q) || p.shortDesc.toLowerCase().includes(q));
   }
+  list = applyPriceFilter(list);
   if (state.sort==="priceLow") list = [...list].sort((a,b)=>a.price-b.price);
   else if (state.sort==="priceHigh") list = [...list].sort((a,b)=>b.price-a.price);
   else if (state.sort==="rating") list = [...list].sort((a,b)=>b.rating-a.rating);
 
-  const sortLabel = {newest:"Newest", priceLow:"Price ↑", priceHigh:"Price ↓", rating:"Top Rated"}[state.sort];
+  const sortLabel = {newest:"Newest", priceLow:"Price: Low to High", priceHigh:"Price: High to Low", rating:"Top Rated"}[state.sort];
   const allChips = [{id:"all",name:"All"}, ...CATEGORY_GROUPS];
   const activeGroup = groupInfo(state.category);
   const showSubchips = activeGroup && activeGroup.children;
+  const tint = CATEGORY_TINT[state.category] || CATEGORY_TINT.all;
+  const groupLabel = activeGroup ? activeGroup.name : "All Products";
 
   return `
     <header class="topbar">
       <div class="topbar-row">
         <button class="icon-btn" onclick="goToHome()">${icon("back")}</button>
         <span class="logo" style="font-size:20px;">Memories<span class="heart">♡</span></span>
-        <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
+        <span style="width:36px;"></span>
       </div>
-      <div class="search-bar">
-        <input id="searchInput" type="text" placeholder="Search for frames, magnets, gifts..." value="${state.search}">
-        <button class="search-go">${icon("search")}</button>
+      <div class="search-bar ${state.search?"has-value":""}">
+        <input id="searchInput" type="text" placeholder="Search for frames, magnets, gifts..." value="${state.search}" enterkeyhint="search">
+        ${state.search ? `<button class="search-clear" onclick="clearSearch()">×</button>` : ""}
+        <button class="search-go" onclick="submitSearch()">${icon("search")}</button>
       </div>
     </header>
 
-    <div class="section-title">Our Gallery</div>
-    <p class="section-sub">Beautiful memories, beautifully framed.</p>
+    <div class="gallery-hero" style="--tint-a:${tint[0]}; --tint-b:${tint[1]}">
+      <div class="gh-eyebrow">Gallery</div>
+      <div class="gh-title">${groupLabel}</div>
+      <div class="gh-sub">Beautiful memories, beautifully framed.</div>
+      <div class="gh-count">${list.length} item${list.length===1?"":"s"}</div>
+    </div>
 
     <div class="chip-row">
       ${allChips.map(c => `<button class="chip ${state.category===c.id?"active":""}" onclick="goToGallery('${c.id}')">${c.icon?icon(c.icon):""} ${c.name}</button>`).join("")}
@@ -630,13 +938,24 @@ function renderGallery() {
     ` : ""}
 
     <div class="filter-sort-row">
-      <button class="pill-btn">${icon("filter")} Filter</button>
-      <button class="pill-btn" id="sortBtn">${icon("sort")} Sort: ${sortLabel}</button>
+      <button class="pill-btn ${state.maxPrice?"has-filter":""}" onclick="openFilterSheet()">${icon("filter")} ${state.maxPrice ? `Under ₹${state.maxPrice}` : "Filter"}</button>
+      <button class="pill-btn" onclick="openSortSheet()">${icon("sort")} Sort: ${sortLabel}</button>
     </div>
 
     ${list.length ? `<div class="grid">${list.map(productCard).join("")}</div>`
-                  : `<div class="empty-state">No products found. Try a different search or category.</div>`}
+                  : `<div class="empty-state">No products found. Try a different search, category, or reset filters.</div>`}
   `;
+}
+function submitSearch() {
+  const input = document.getElementById("searchInput");
+  if (input) input.blur();
+  vibrate(8);
+}
+function clearSearch() {
+  state.search = "";
+  render();
+  const input = document.getElementById("searchInput");
+  if (input) input.focus();
 }
 
 function renderDetail() {
@@ -647,7 +966,7 @@ function renderDetail() {
     <div class="back-row">
       <button class="back-btn" onclick="goToProductCategory('${p.category}')">${icon("back")} Back</button>
       <span class="logo" style="font-size:18px;">Memories<span class="heart">♡</span></span>
-      <a href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank" class="icon-btn">${icon("whatsapp")}</a>
+      <span style="width:36px;"></span>
     </div>
 
     <div class="pd-wrap">
@@ -664,7 +983,7 @@ function renderDetail() {
       <div class="pd-name">${p.name}</div>
       <div class="pd-shortdesc">${p.shortDesc}</div>
       <div class="pd-rating"><span class="stars">${starString(p.rating)}</span> (${p.reviews} reviews)</div>
-      <div class="pd-price-row"><span class="pd-price">₹${p.price}</span>${p.mrp?`<span class="pd-mrp">₹${p.mrp}</span>`:""}</div>
+      <div class="pd-price-row"><span class="pd-price">₹${p.price}</span>${p.mrp?`<span class="pd-mrp">₹${p.mrp}</span>`:""}${discountPct(p)?`<span class="pd-discount">${discountPct(p)}% OFF</span>`:""}</div>
 
       <div class="pd-features">${p.features.slice(0,4).map(f => `<div class="pd-feature">${icon("check")}<span>${f}</span></div>`).join("")}</div>
 
@@ -679,6 +998,9 @@ function renderDetail() {
       <div class="pd-actions">
         <button class="btn-lg outline" onclick="openCustomize('${p.id}')">Customize</button>
         <button class="btn-lg dark" onclick="window.open('${waLink(waOrderMsg(p, state.activeSize, state.qty))}','_blank')">${icon("whatsapp")} Order on WhatsApp</button>
+      </div>
+      <div class="pd-actions" style="margin-top:-10px;">
+        <button class="btn-lg outline pd-share" onclick="shareProduct('${p.id}')"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg> Share This</button>
       </div>
     </div>
     </div>
@@ -697,6 +1019,24 @@ function renderDetail() {
   `;
 }
 
+async function shareProduct(id) {
+  vibrate();
+  const p = getProduct(id);
+  if (!p) return;
+  const text = `Check out *${p.name}* from ${SHOP.name} — ₹${p.price}\n${p.shortDesc}\n\nOrder here: ${waLink(waOrderMsg(p))}`;
+  try {
+    if (navigator.share) {
+      await navigator.share({ title: `${p.name} — ${SHOP.name}`, text });
+      return;
+    }
+  } catch (err) { /* share cancelled — fall through */ }
+  try {
+    await navigator.clipboard.writeText(text);
+    showToast("Link copied — paste it anywhere");
+  } catch (err) {
+    window.open(waLink(text), "_blank");
+  }
+}
 function setImage(i) { state.activeImage = i; render(); }
 function setSize(s) { state.activeSize = s; render(); }
 function setQty(d) { vibrate(8); state.qty = Math.max(1, Math.min(20, state.qty + d)); render(); }
@@ -731,19 +1071,12 @@ function render() {
       input.addEventListener("input", (e) => { state.search = e.target.value; render(); input.focus(); input.setSelectionRange(input.value.length, input.value.length); });
       if (state.focusSearchOnLoad) { input.focus(); state.focusSearchOnLoad = false; }
     }
-    const sortBtn = document.getElementById("sortBtn");
-    if (sortBtn) {
-      sortBtn.addEventListener("click", () => {
-        const modes = ["newest","priceLow","priceHigh","rating"];
-        state.sort = modes[(modes.indexOf(state.sort)+1) % modes.length];
-        render();
-      });
-    }
   }
   if (state.view === "detail") setupGallerySwipe();
   setupImageLoadState();
   renderBottomNav();
   renderCustomizeModal();
+  renderSheetModal();
 }
 
 // Mark each image with a data-loaded flag so the CSS skeleton shimmer shows
@@ -840,7 +1173,7 @@ function renderBottomNav() {
     <button class="nav-item ${state.view==="home" ? "active":""}" onclick="goToHome()">${icon("home")}<span>Home</span></button>
     <button class="nav-item ${(state.view==="gallery"||state.view==="detail") ? "active":""}" onclick="goToGallery('all')">${icon("grid")}<span>Gallery</span></button>
     <button class="nav-item ${state.view==="wishlist" ? "active":""}" onclick="goToWishlist()">${icon(wl.length?"heartFilled":"heart")}<span>Wishlist (${wl.length})</span></button>
-    <a class="nav-item" href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank">${icon("whatsapp")}<span>Order</span></a>
+    <a class="nav-item" href="${waLink(`Hi ${SHOP.name}! I'd like to know more about your products.`)}" target="_blank">${icon("whatsapp")}<span>Contact Us</span></a>
   `;
 }
 
@@ -890,6 +1223,11 @@ function updateCustomizeImageBox() {
        <button class="upload-remove" onclick="removeCustomizeImage(event)">×</button>`
     : `<div class="placeholder">${icon("frame")}<div>Tap to upload the photo you want used</div></div>`;
 }
+async function urlToFile(url, filename) {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new File([blob], filename, { type: blob.type || "image/jpeg" });
+}
 function dataURLtoFile(dataUrl, filename) {
   const parts = dataUrl.split(",");
   const mimeMatch = parts[0].match(/:(.*?);/);
@@ -901,6 +1239,19 @@ function dataURLtoFile(dataUrl, filename) {
   return new File([u8arr], filename, { type: mime });
 }
 
+// IMPORTANT — a real platform limit, not a bug: no website (this one included)
+// can force-press "Send" inside WhatsApp, or silently attach a photo to a
+// wa.me chat. Browsers block that on purpose, for everyone's safety. What we
+// CAN do is get every photo and the full message sitting right where the
+// person needs it, so all that's left on their end is one tap on Send:
+//  1) Try navigator.share() with the product photo + the customer's photo
+//     attached as real files — on a phone this opens the native share sheet
+//     already pre-loaded, and picking WhatsApp drops both images straight
+//     into the chat with the message as the caption.
+//  2) If the browser/device can't share files (most desktops), fall back to
+//     auto-downloading both photos and copying the message to the clipboard,
+//     then opening the WhatsApp chat — so the person just pastes and attaches
+//     the two files that are now waiting in their Downloads folder.
 async function submitCustomize() {
   const p = getProduct(state.customizeProductId);
   if (!p) return;
@@ -919,31 +1270,106 @@ async function submitCustomize() {
   message += `\nCustomization details:\n${details || "-"}\n`;
   message += `\nMy details:\nName: ${name}\nPhone: ${phone || "-"}\n`;
 
-  // If a reference photo was uploaded, try to share it directly (this can
-  // actually attach the image when the person picks WhatsApp from their
-  // phone's native share sheet). Falls back to a text-only WhatsApp link
-  // on browsers/desktops that don't support sharing files.
+  const sendBtn = document.getElementById("customizeSendBtn");
+  if (sendBtn) { sendBtn.disabled = true; sendBtn.textContent = "Preparing photos..."; }
+
+  // Gather every image we can attach: our product photo, plus the
+  // customer's own reference photo if they uploaded one.
+  const files = [];
+  try {
+    files.push(await urlToFile(p.images[0], `${p.id}.jpg`));
+  } catch (err) { /* product photo couldn't be fetched — continue without it */ }
   if (state.customizeImageData) {
-    try {
-      const file = dataURLtoFile(state.customizeImageData, "reference-photo.jpg");
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          text: message,
-          title: `${SHOP.name} — Customize Order`
-        });
-        closeCustomize();
-        return;
-      }
-    } catch (err) {
-      // Share was cancelled or unsupported — fall through to WhatsApp link below.
-    }
-    message += `\n(Reference photo: sharing directly wasn't supported on this device — I'll send the photo in this chat right after this message)`;
+    try { files.push(dataURLtoFile(state.customizeImageData, "reference-photo.jpg")); }
+    catch (err) { /* ignore */ }
   }
 
+  if (files.length && navigator.canShare && navigator.canShare({ files })) {
+    try {
+      await navigator.share({ files, text: message, title: `${SHOP.name} — Customize Order` });
+      closeCustomize();
+      return;
+    } catch (err) {
+      // Person cancelled the share sheet, or the OS rejected it — fall through.
+    }
+  }
+
+  // Fallback path: put everything within one tap's reach — copy the
+  // message, download the photo(s), then open the chat itself.
+  try { await navigator.clipboard.writeText(message); } catch (err) { /* ignore */ }
+  files.forEach((file, i) => {
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url; a.download = file.name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 4000);
+  });
+  showToast(files.length ? "Message copied & photo(s) saved — attach them in the chat" : "Message copied — paste it in the chat");
   window.open(waLink(message), "_blank");
   closeCustomize();
 }
+
+/* ---------- Sort / Filter bottom sheet ---------- */
+function openSortSheet() { vibrate(); pushHistory("sort"); state.sheetOpen = "sort"; render(); }
+function openFilterSheet() { vibrate(); pushHistory("filter"); state.filterDraftPrice = state.maxPrice || 1000; state.sheetOpen = "filter"; render(); }
+function closeSheet() { state.sheetOpen = null; render(); }
+function setSort(mode) { vibrate(8); state.sort = mode; state.sheetOpen = null; render(); }
+function updateFilterDraft(v) {
+  state.filterDraftPrice = Number(v);
+  const el = document.getElementById("filterPriceValue");
+  if (el) el.textContent = "≤ ₹" + state.filterDraftPrice;
+}
+function applyFilterSheet() {
+  vibrate(8);
+  state.maxPrice = state.filterDraftPrice < 1000 ? state.filterDraftPrice : null;
+  state.sheetOpen = null;
+  render();
+}
+function clearFilterSheet() {
+  vibrate(8);
+  state.maxPrice = null;
+  state.filterDraftPrice = 1000;
+  state.sheetOpen = null;
+  render();
+}
+function renderSheetModal() {
+  const root = document.getElementById("sheetRoot");
+  if (!root) return;
+  if (!state.sheetOpen) { root.innerHTML = ""; return; }
+  if (state.sheetOpen === "sort") {
+    const opts = [
+      ["newest","Newest First"], ["priceLow","Price: Low to High"],
+      ["priceHigh","Price: High to Low"], ["rating","Top Rated"]
+    ];
+    root.innerHTML = `
+      <div class="modal-backdrop" onclick="closeSheet()"></div>
+      <div class="modal-sheet">
+        <div class="modal-header"><span class="modal-title">Sort By</span><button class="modal-close" onclick="closeSheet()">×</button></div>
+        <div class="sheet-option-row">
+          ${opts.map(([id,label]) => `
+            <button class="sheet-option ${state.sort===id?"active":""}" onclick="setSort('${id}')">
+              <span>${label}</span><span class="dot">${state.sort===id?icon("check"):""}</span>
+            </button>`).join("")}
+        </div>
+      </div>`;
+  } else if (state.sheetOpen === "filter") {
+    root.innerHTML = `
+      <div class="modal-backdrop" onclick="closeSheet()"></div>
+      <div class="modal-sheet">
+        <div class="modal-header"><span class="modal-title">Filter by Price</span><button class="modal-close" onclick="closeSheet()">×</button></div>
+        <div class="range-row">
+          <input type="range" min="150" max="1000" step="50" value="${state.filterDraftPrice}" oninput="updateFilterDraft(this.value)">
+          <span class="range-value" id="filterPriceValue">${state.filterDraftPrice >= 1000 ? "Any price" : "≤ ₹" + state.filterDraftPrice}</span>
+        </div>
+        <div class="pd-actions" style="margin-bottom:4px;">
+          <button class="btn-lg outline" onclick="clearFilterSheet()">Reset</button>
+          <button class="btn-lg dark" onclick="applyFilterSheet()">Apply Filter</button>
+        </div>
+      </div>`;
+  }
+}
+
+/* ---------- (Floating quick-contact WhatsApp button removed per request) ---------- */
 
 function renderCustomizeModal() {
   const modalRoot = document.getElementById("modalRoot");
@@ -980,13 +1406,13 @@ function renderCustomizeModal() {
             : `<div class="placeholder">${icon("frame")}<div>Tap to upload the photo you want used</div></div>`}
         </div>
       </div>
-      <div class="modal-note">WhatsApp doesn't let a website attach photos automatically — after you tap send, just share this photo in the chat that opens.</div>
+      <div class="modal-note">On your phone this opens the share sheet with the product photo${state.customizeImageData?" and your reference photo":""} already attached — just pick WhatsApp and tap Send. On desktop we'll copy your message and save the photo(s) so you can attach them in one go.</div>
 
       <div class="modal-label">Your Details</div>
       <input type="text" id="customizeName" class="modal-input" placeholder="Your name">
       <input type="tel" id="customizePhone" class="modal-input" placeholder="Phone number (optional)">
 
-      <button class="btn-lg dark" style="width:100%; margin-top:6px;" onclick="submitCustomize()">${icon("whatsapp")} Send Details via WhatsApp</button>
+      <button class="btn-lg dark" id="customizeSendBtn" style="width:100%; margin-top:6px;" onclick="submitCustomize()">${icon("whatsapp")} Send Details via WhatsApp</button>
     </div>
   `;
 }
